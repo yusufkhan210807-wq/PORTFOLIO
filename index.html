@@ -1,1013 +1,1802 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Yusuf Khan — Portfolio</title>
+  <title>YUSUF KHAN — Winden Anomaly // Systems & Crate Portfolio</title>
+
+  <!-- Google Fonts: Cinzel (Dark Series Title), Syne & Anton (Hip-Hop Display), Space Grotesk & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Cinzel:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;0,800;1,400&family=Space+Grotesk:wght@500;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            abyss: '#060709',
+            charcoal: '#111317',
+            pine: '#16241d',
+            slatefog: '#4a5559',
+            amber: '#d49b27',
+            ochre: '#9e6b1b',
+            bone: '#e6e4dd'
+          },
+          fontFamily: {
+            cinzel: ['Cinzel', 'serif'],
+            syne: ['Syne', 'sans-serif'],
+            anton: ['Anton', 'sans-serif'],
+            grotesk: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Three.js & GSAP + ScrollTrigger CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
   <style>
-    /* ─── RESET & INDUSTRIAL PITCH AESTHETIC TOKENS ─────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg-canvas:   #EBEAE6;   /* Off-white architectural background */
-      --bg-alt:      #E2E1DC;   /* Secondary section surface */
-      --card-light:  #D9D9D7;   /* Light neutral block fill */
-      --card-white:  #F5F4F0;   /* Elevated card surface */
-      --card-dark:   #0D0D0D;   /* Matte carbon black block */
-      --crimson:     #990000;   /* Deep crimson accent */
-      --crimson-hi:  #B80000;   /* Hover crimson */
-      --ink:         #0D0D0D;   /* High-contrast black text */
-      --ink-muted:   #4A4A48;   /* Muted body copy */
-      --border-blk:  2px solid #0D0D0D;
-      --border-red:  2px solid #990000;
-      --border-dash: 2px dashed #0D0D0D;
-      --shadow-hard: 6px 6px 0px rgba(13, 13, 13, 0.12);
-      --shadow-red:  6px 6px 0px rgba(153, 0, 0, 0.22);
-      --nav-h:       72px;
-      --font-display:'Space Grotesk', system-ui, sans-serif;
-      --font-mono:   'JetBrains Mono', monospace;
-      --font-sans:   'Inter', system-ui, sans-serif;
+      --abyss: #060709;
+      --charcoal: #111317;
+      --pine: #16241d;
+      --slatefog: #4a5559;
+      --amber: #d49b27;
+      --ochre: #9e6b1b;
+      --bone: #e6e4dd;
+      --mouse-x: 50vw;
+      --mouse-y: 50vh;
     }
 
-    html { scroll-behavior: smooth; }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg-canvas); }
-    ::-webkit-scrollbar-thumb { background: var(--ink); }
-    ::-webkit-scrollbar-thumb:hover { background: var(--crimson); }
-
-    body {
-      font-family: var(--font-sans);
-      background-color: var(--bg-canvas);
-      background-image:
-        linear-gradient(to right, rgba(13, 13, 13, 0.035) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(13, 13, 13, 0.035) 1px, transparent 1px);
-      background-size: 40px 40px;
-      color: var(--ink);
-      line-height: 1.65;
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--abyss);
+      color: var(--bone);
       overflow-x: hidden;
     }
 
-    ::selection { background: var(--crimson); color: #ffffff; }
-    a { color: inherit; text-decoration: none; }
-
-    /* ─── SCROLL-REVEAL UTILITY ─────────────────────────────── */
-    .reveal {
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.6s cubic-bezier(.22,1,.36,1),
-                  transform 0.6s cubic-bezier(.22,1,.36,1);
-    }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .reveal-delay-1 { transition-delay: 0.08s; }
-    .reveal-delay-2 { transition-delay: 0.16s; }
-    .reveal-delay-3 { transition-delay: 0.24s; }
-    .reveal-delay-4 { transition-delay: 0.32s; }
-
-    @media (prefers-reduced-motion: reduce) {
-      .reveal { opacity: 1; transform: none; transition: none; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--abyss);
+      color: var(--bone);
+      overflow-x: hidden;
+      selection-background-color: var(--amber);
+      selection-color: var(--abyss);
     }
 
-    /* ─── NAV ───────────────────────────────────────────────── */
-    nav {
+    ::selection {
+      background: var(--amber);
+      color: var(--abyss);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--abyss); }
+    ::-webkit-scrollbar-thumb { background: var(--ochre); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--amber); }
+
+    /* Fixed 3D WebGL Canvas */
+    #webgl-canvas {
       position: fixed;
-      top: 0; left: 0; right: 0;
-      height: var(--nav-h);
-      z-index: 100;
-      background: rgba(235, 234, 230, 0.94);
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Volumetric Cursor Flashlight & Vignette */
+    .volumetric-light {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background:
+        radial-gradient(650px circle at var(--mouse-x) var(--mouse-y), rgba(212, 155, 39, 0.08), rgba(22, 36, 29, 0.12) 45%, transparent 80%),
+        radial-gradient(circle at 50% 50%, transparent 45%, rgba(6, 7, 9, 0.88) 100%);
+      transition: opacity 0.3s ease;
+    }
+
+    /* Full-screen SVG Film Grain Overlay */
+    .film-grain {
+      position: fixed;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      z-index: 90;
+      pointer-events: none;
+      opacity: 0.055;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      animation: grainShift 6s steps(8) infinite;
+    }
+
+    @keyframes grainShift {
+      0%, 100% { transform: translate(0, 0); }
+      15% { transform: translate(-4%, -5%); }
+      30% { transform: translate(3%, -2%); }
+      45% { transform: translate(-3%, 4%); }
+      60% { transform: translate(4%, 2%); }
+      75% { transform: translate(-2%, -3%); }
+      90% { transform: translate(2%, 4%); }
+    }
+
+    /* Main Content Layer above WebGL */
+    main, header, footer {
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Botanical Intertwined Typography System */
+    .botanical-header-wrap {
+      position: relative;
+      display: inline-block;
+      padding: 0.35em 0.15em;
+    }
+
+    .botanical-svg-back {
+      position: absolute;
+      inset: -22% -10%;
+      width: 120%;
+      height: 144%;
+      z-index: 1;
+      pointer-events: none;
+      overflow: visible;
+      filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.95));
+    }
+
+    .botanical-title-text {
+      position: relative;
+      z-index: 2;
+      text-shadow:
+        0 6px 28px rgba(0, 0, 0, 0.92),
+        0 0 40px rgba(212, 155, 39, 0.14);
+    }
+
+    .botanical-svg-front {
+      position: absolute;
+      inset: -20% -8%;
+      width: 116%;
+      height: 140%;
+      z-index: 3;
+      pointer-events: none;
+      overflow: visible;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.95));
+    }
+
+    /* Branch & Leaf Animations */
+    .branch-path {
+      stroke-dasharray: 1200;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .leaf-cluster {
+      transform-origin: center;
+      animation: forestSway 5.5s ease-in-out infinite alternate;
+    }
+
+    .leaf-cluster-alt {
+      transform-origin: center;
+      animation: forestSway 7s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes forestSway {
+      0% { transform: rotate(-2.2deg) translateY(0px); }
+      100% { transform: rotate(2.8deg) translateY(-2px); }
+    }
+
+    /* Glass & Cave Surfaces */
+    .cave-panel {
+      background: linear-gradient(145deg, rgba(17, 19, 23, 0.84) 0%, rgba(10, 14, 13, 0.9) 60%, rgba(22, 36, 29, 0.55) 100%);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
-      border-bottom: var(--border-blk);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 clamp(1.25rem, 5vw, 3.5rem);
+      border: 1px solid rgba(74, 85, 89, 0.32);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(212, 155, 39, 0.14);
     }
-    .nav-logo {
-      font-family: var(--font-display);
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: var(--ink);
-      letter-spacing: -0.04em;
-      display: flex;
-      align-items: center;
-      gap: 0.2rem;
-    }
-    .nav-logo span { color: var(--crimson); }
 
-    .nav-links {
+    .cave-panel:hover {
+      border-color: rgba(212, 155, 39, 0.55);
+    }
+
+    /* Hip-Hop Crate Carousel Styles */
+    .crate-viewport {
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: pan-y;
+      perspective: 1400px;
+    }
+
+    .crate-viewport.dragging {
+      cursor: grabbing;
+    }
+
+    .crate-track {
       display: flex;
-      gap: clamp(1.25rem, 2.5vw, 2.25rem);
-      list-style: none;
+      gap: 2.75rem;
+      padding: 4.5rem calc(50vw - min(44vw, 220px)) 3.5rem;
+      will-change: transform;
+      transform-style: preserve-3d;
     }
-    .nav-links a {
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--ink-muted);
-      padding: 4px 0;
+
+    .mixtape-card {
+      flex: 0 0 min(86vw, 430px);
       position: relative;
-      transition: color 0.2s ease;
+      background: #0d0f12;
+      border: 3px solid #e6e4dd;
+      box-shadow: 12px 12px 0px #d49b27, 0 25px 60px rgba(0, 0, 0, 0.9);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+      transform-style: preserve-3d;
     }
-    .nav-links a::after {
+
+    .mixtape-card::before {
       content: '';
       position: absolute;
-      bottom: -2px; left: 0;
-      width: 0; height: 2px;
-      background: var(--crimson);
-      transition: width 0.25s ease;
-    }
-    .nav-links a:hover, .nav-links a.active { color: var(--ink); }
-    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
-
-    /* Hamburger */
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-      padding: 6px;
-      background: var(--card-light);
-      border: var(--border-blk);
-    }
-    .hamburger span {
-      display: block;
-      width: 22px; height: 2px;
-      background: var(--ink);
-      transition: all 0.25s ease;
-    }
-    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .hamburger.open span:nth-child(2) { opacity: 0; }
-    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-    @media (max-width: 680px) {
-      .hamburger { display: flex; }
-      .nav-links {
-        position: fixed;
-        top: var(--nav-h); left: 0; right: 0;
-        background: var(--bg-canvas);
-        flex-direction: column;
-        gap: 0;
-        padding: 1rem 0;
-        transform: translateY(-115%);
-        opacity: 0;
-        transition: transform 0.35s ease, opacity 0.25s ease;
-        border-bottom: var(--border-blk);
-      }
-      .nav-links.open { transform: translateY(0); opacity: 1; }
-      .nav-links a {
-        display: block;
-        padding: 1rem 2rem;
-        font-size: 0.95rem;
-      }
-      .nav-links a::after { display: none; }
-      .nav-links a.active {
-        background: var(--card-light);
-        border-left: 4px solid var(--crimson);
-      }
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+      opacity: 0.14;
+      background-image: radial-gradient(#d49b27 1.1px, transparent 1.1px), radial-gradient(#ffffff 0.8px, #0d0f12 0.8px);
+      background-size: 12px 12px;
+      background-position: 0 0, 6px 6px;
+      mix-blend-mode: overlay;
     }
 
-    /* ─── SECTION WRAPPER & HEADINGS ────────────────────────── */
-    section {
-      padding: clamp(5rem, 9vw, 7.5rem) clamp(1.25rem, 5vw, 3.5rem);
-      border-bottom: 1.5px solid rgba(13, 13, 13, 0.14);
-    }
-    .container {
-      max-width: 1140px;
-      margin: 0 auto;
-    }
-    .section-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      font-weight: 800;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--crimson);
-      margin-bottom: 0.5rem;
-    }
-    .section-label::before {
-      content: '';
-      width: 20px;
-      height: 2px;
-      background: var(--crimson);
-      display: inline-block;
-    }
-    .section-heading {
-      font-family: var(--font-display);
-      font-size: clamp(2.1rem, 4.8vw, 3.25rem);
-      font-weight: 800;
-      color: var(--ink);
-      line-height: 1.1;
-      letter-spacing: -0.03em;
+    .mixtape-card.active-card {
+      border-color: #d49b27;
+      box-shadow: 14px 14px 0px #9e6b1b, 0 0 45px rgba(212, 155, 39, 0.28);
     }
 
-    /* ─── HERO ──────────────────────────────────────────────── */
-    #hero {
-      min-height: 100svh;
+    /* Peeking 12" Vinyl Disc from Top of Sleeve */
+    .vinyl-disc {
+      position: absolute;
+      top: -54px;
+      right: 28px;
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      background:
+        repeating-radial-gradient(
+          circle at 50% 50%,
+          #090a0c 0px,
+          #090a0c 2px,
+          #1b1f24 3px,
+          #090a0c 4px
+        );
+      border: 2px solid rgba(212, 155, 39, 0.45);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95);
+      z-index: -1;
       display: flex;
       align-items: center;
-      padding-top: calc(var(--nav-h) + 2rem);
+      justify-content: center;
+      transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+      animation: spinVinyl 9s linear infinite;
+      animation-play-state: paused;
+    }
+
+    .mixtape-card:hover .vinyl-disc,
+    .mixtape-card.active-card .vinyl-disc {
+      transform: translateY(-34px) rotate(35deg);
+      animation-play-state: running;
+    }
+
+    @keyframes spinVinyl {
+      from { transform: translateY(-34px) rotate(0deg); }
+      to { transform: translateY(-34px) rotate(360deg); }
+    }
+
+    /* Vinyl Scratch Glitch Effect on Card Switch */
+    .glitch-burst {
+      animation: glitchShake 0.32s steps(3) 1;
+    }
+
+    @keyframes glitchShake {
+      0% { filter: hue-rotate(0deg) contrast(1); transform: translate(0, 0); }
+      33% { filter: invert(0.12) contrast(1.4) drop-shadow(-4px 0 #d49b27) drop-shadow(4px 0 #16241d); transform: translate(-3px, 1px) skewX(-2deg); }
+      66% { filter: contrast(1.3) drop-shadow(4px 0 #d49b27); transform: translate(3px, -1px) skewX(2deg); }
+      100% { filter: hue-rotate(0deg) contrast(1); transform: translate(0, 0); }
+    }
+
+    /* Parental Advisory Brutalist Stamp */
+    .advisory-stamp {
+      display: inline-flex;
+      flex-direction: column;
+      border: 2px solid #e6e4dd;
+      background: #060709;
+      color: #e6e4dd;
+      font-family: 'Anton', sans-serif;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Skill Pill Styling */
+    .skill-pill {
       position: relative;
       overflow: hidden;
+      transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
     }
-
-    .hero-frame {
-      border: var(--border-dash);
-      background: rgba(255, 255, 255, 0.35);
-      padding: clamp(2rem, 5vw, 4rem);
-      position: relative;
-      width: 100%;
-    }
-
-    .hero-greeting {
-      font-family: var(--font-mono);
-      font-size: clamp(0.85rem, 1.8vw, 0.95rem);
-      font-weight: 700;
-      color: var(--crimson);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 0.75rem;
-    }
-
-    .hero-name {
-      font-family: var(--font-display);
-      font-size: clamp(2.8rem, 7.5vw, 5.25rem);
-      font-weight: 800;
-      color: var(--ink);
-      letter-spacing: -0.04em;
-      line-height: 1.03;
-      margin-bottom: 0.35em;
-    }
-    .hero-name em {
-      font-style: normal;
-      color: var(--crimson);
-    }
-
-    .hero-headline {
-      display: inline-block;
-      background: var(--card-dark);
-      color: #ffffff;
-      border-left: 5px solid var(--crimson);
-      font-family: var(--font-mono);
-      font-size: clamp(0.9rem, 1.8vw, 1.1rem);
-      font-weight: 600;
-      padding: 0.65rem 1.15rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .hero-sub {
-      font-size: clamp(1rem, 1.8vw, 1.15rem);
-      color: var(--ink-muted);
-      max-width: 62ch;
-      margin-bottom: 2.25rem;
-      line-height: 1.75;
-    }
-
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      background: var(--card-dark);
-      color: #ffffff;
-      font-family: var(--font-mono);
-      font-weight: 700;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      padding: 0.95rem 1.8rem;
-      border: var(--border-red);
-      box-shadow: var(--shadow-red);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .btn-primary:hover {
-      background: var(--crimson);
-      transform: translate(-3px, -3px);
-      box-shadow: 8px 8px 0px rgba(13, 13, 13, 0.25);
-    }
-    .btn-primary svg { transition: transform 0.25s ease; }
-    .btn-primary:hover svg { transform: translateX(4px); }
-
-    /* ─── ABOUT / SKILLS ────────────────────────────────────── */
-    #about { background: var(--bg-alt); }
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.15fr;
-      gap: clamp(2.5rem, 5vw, 4.5rem);
-      align-items: start;
-      margin-top: 2.75rem;
-    }
-    @media (max-width: 860px) {
-      .about-grid { grid-template-columns: 1fr; }
-    }
-
-    .about-text {
-      background: var(--card-white);
-      border: var(--border-blk);
-      box-shadow: var(--shadow-hard);
-      padding: 2rem;
-      font-size: clamp(0.98rem, 1.6vw, 1.06rem);
-      color: var(--ink);
-      line-height: 1.75;
-    }
-    .about-text p + p { margin-top: 1.15em; }
-    .about-text strong {
-      color: var(--crimson);
-      font-weight: 700;
-    }
-
-    .skills-container {
-      border: var(--border-dash);
-      padding: 1.75rem;
-      background: rgba(255, 255, 255, 0.4);
-    }
-    .skills-group + .skills-group {
-      margin-top: 1.5rem;
-      padding-top: 1.25rem;
-      border-top: 1px dashed rgba(13, 13, 13, 0.25);
-    }
-    .skills-group-title {
-      font-family: var(--font-mono);
-      font-size: 0.76rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--crimson);
-      margin-bottom: 0.75rem;
-    }
-    .skills-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-    }
-    .skill-tag {
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      font-weight: 700;
-      padding: 0.45em 0.95em;
-      background: var(--card-light);
-      color: var(--ink);
-      border: 1.5px solid var(--ink);
-      cursor: default;
-      transition: all 0.2s ease;
-    }
-    .skill-tag.highlight {
-      background: var(--card-dark);
-      color: #ffffff;
-      border-color: var(--crimson);
-    }
-    .skill-tag:hover {
-      background: var(--crimson);
-      color: #ffffff;
-      border-color: var(--ink);
-      transform: translateY(-2px);
-    }
-
-    /* ─── EXPERIENCE ────────────────────────────────────────── */
-    #experience { background: var(--bg-canvas); }
-    .timeline {
-      margin-top: 2.75rem;
-      position: relative;
-      padding-left: 2.5rem;
-    }
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 0.5rem; top: 0.25rem; bottom: 0.25rem;
-      width: 3px;
-      background: var(--ink);
-    }
-    .timeline-item {
-      position: relative;
-      background: var(--card-light);
-      border: var(--border-blk);
-      box-shadow: var(--shadow-hard);
-      padding: 2rem;
-      transition: transform 0.25s ease;
-    }
-    .timeline-item:hover {
-      transform: translateX(6px);
-    }
-    .timeline-dot {
-      position: absolute;
-      left: -2.6rem;
-      top: 2rem;
-      width: 18px; height: 18px;
-      background: var(--crimson);
-      border: 3px solid var(--ink);
-    }
-    .timeline-meta {
-      display: inline-block;
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      background: var(--card-dark);
-      color: #ffffff;
-      border-left: 3px solid var(--crimson);
-      padding: 0.25rem 0.7rem;
-      margin-bottom: 0.75rem;
-    }
-    .timeline-role {
-      font-family: var(--font-display);
-      font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-      font-weight: 800;
-      color: var(--ink);
-      margin-bottom: 0.2rem;
-    }
-    .timeline-company {
-      font-family: var(--font-mono);
-      font-size: 0.92rem;
-      font-weight: 700;
-      color: var(--crimson);
-      margin-bottom: 1.25rem;
-    }
-    .timeline-highlights {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.7rem;
-    }
-    .timeline-highlights li {
-      font-size: 0.96rem;
-      color: var(--ink);
-      padding-left: 1.5rem;
-      position: relative;
-      line-height: 1.65;
-    }
-    .timeline-highlights li::before {
-      content: '→';
-      font-family: var(--font-mono);
-      font-weight: 800;
-      color: var(--crimson);
-      position: absolute;
-      left: 0; top: 0;
-    }
-
-    /* ─── PROJECTS ──────────────────────────────────────────── */
-    #projects { background: var(--bg-alt); }
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
-      gap: 2rem;
-      margin-top: 2.75rem;
-    }
-
-    .project-card {
-      background: var(--card-white);
-      border: var(--border-blk);
-      box-shadow: var(--shadow-hard);
-      padding: 2rem;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-    .project-card.featured {
-      background: var(--card-dark);
-      color: #ffffff;
-      border: var(--border-red);
-      box-shadow: var(--shadow-red);
-    }
-    .project-card:hover {
-      transform: translate(-4px, -4px);
-      box-shadow: 10px 10px 0px rgba(13, 13, 13, 0.2);
-    }
-    .project-card.featured:hover {
-      box-shadow: 10px 10px 0px rgba(153, 0, 0, 0.35);
-    }
-
-    .project-top-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.25rem;
-    }
-    .project-index {
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--crimson);
-      background: rgba(153, 0, 0, 0.1);
-      padding: 0.25rem 0.6rem;
-      border: 1px solid var(--crimson);
-    }
-    .project-card.featured .project-index {
-      background: var(--crimson);
-      color: #ffffff;
-    }
-
-    .project-icon {
-      width: 44px; height: 44px;
-      border: var(--border-blk);
-      background: var(--card-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-    }
-    .project-card.featured .project-icon {
-      background: #1A1A1A;
-      border-color: var(--crimson);
-    }
-
-    .project-title {
-      font-family: var(--font-display);
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--ink);
-      margin-bottom: 0.75rem;
-      line-height: 1.25;
-    }
-    .project-card.featured .project-title {
-      color: #ffffff;
-    }
-
-    .project-desc {
-      font-size: 0.94rem;
-      color: var(--ink-muted);
-      line-height: 1.7;
-      flex-grow: 1;
-    }
-    .project-card.featured .project-desc {
-      color: #D0D0CE;
-    }
-
-    .project-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.45rem;
-      margin-top: 1.5rem;
-    }
-    .project-tag {
-      font-family: var(--font-mono);
-      font-size: 0.73rem;
-      font-weight: 700;
-      color: var(--ink);
-      background: var(--card-light);
-      border: 1px solid var(--ink);
-      padding: 0.28em 0.65em;
-    }
-    .project-card.featured .project-tag {
-      background: #1B1B1B;
-      color: #EAEAEA;
-      border-color: rgba(255, 255, 255, 0.28);
-    }
-
-    .project-action {
-      margin-top: 1.5rem;
-      padding-top: 1.25rem;
-      border-top: 1px dashed rgba(255, 255, 255, 0.2);
-    }
-    .btn-project {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.55rem;
-      width: 100%;
-      font-family: var(--font-mono);
-      font-size: 0.82rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      padding: 0.8rem 1.2rem;
-      background: var(--crimson);
-      color: #ffffff;
-      border: 1.5px solid #ffffff;
-      transition: all 0.2s ease;
-    }
-    .btn-project:hover {
-      background: #ffffff;
-      color: var(--ink);
-      border-color: var(--crimson);
-    }
-
-    /* ─── CONTACT / FOOTER ──────────────────────────────────── */
-    #contact {
-      background: var(--card-dark);
-      color: #ffffff;
-      text-align: center;
-      border-bottom: none;
-    }
-    #contact .section-label {
-      color: #ff6666;
-    }
-    #contact .section-label::before {
-      background: #ff6666;
-    }
-    #contact .section-heading {
-      color: #ffffff;
-      margin-bottom: 1.25rem;
-    }
-    .contact-sub {
-      font-size: 1.05rem;
-      color: #C2C2C0;
-      max-width: 50ch;
-      margin: 0 auto 2.25rem;
-      line-height: 1.7;
-    }
-    .contact-email {
-      display: inline-block;
-      font-family: var(--font-mono);
-      font-size: clamp(1.1rem, 2.8vw, 1.5rem);
-      font-weight: 800;
-      color: #ffffff;
-      background: #161616;
-      border: var(--border-red);
-      padding: 0.75rem 1.5rem;
-      margin-bottom: 2.5rem;
-      transition: all 0.2s ease;
-    }
-    .contact-email:hover {
-      background: var(--crimson);
-      transform: translateY(-2px);
-    }
-
-    .social-links {
-      display: flex;
-      justify-content: center;
-      gap: 1.25rem;
-      flex-wrap: wrap;
-    }
-    .social-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.55rem;
-      font-family: var(--font-mono);
-      font-size: 0.88rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: #ffffff;
-      padding: 0.75em 1.5em;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      background: #141414;
-      transition: all 0.2s ease;
-    }
-    .social-link:hover {
-      border-color: var(--crimson);
-      background: var(--crimson);
+    .skill-pill:hover {
       transform: translateY(-3px);
-    }
-    .footer-line {
-      margin-top: 4.5rem;
-      padding-top: 2rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.5);
-      letter-spacing: 0.05em;
-    }
-
-    /* ─── BACK TO TOP ───────────────────────────────────────── */
-    .back-top {
-      position: fixed;
-      bottom: 2rem; right: 2rem;
-      width: 46px; height: 46px;
-      background: var(--card-dark);
-      color: #ffffff;
-      border: var(--border-red);
-      box-shadow: var(--shadow-hard);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0;
-      transform: translateY(15px);
-      transition: all 0.3s ease;
-      z-index: 99;
-    }
-    .back-top.show { opacity: 1; transform: translateY(0); }
-    .back-top:hover {
-      background: var(--crimson);
-      transform: translateY(-4px);
+      border-color: var(--amber);
+      box-shadow: 0 6px 20px rgba(212, 155, 39, 0.22);
     }
   </style>
 </head>
-<body>
+<body class="antialiased selection:bg-amber selection:text-abyss">
 
-  <!-- ═══════════════ NAV ═══════════════ -->
-  <nav id="navbar">
-    <div class="nav-logo">YK<span>.</span></div>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
-    <ul class="nav-links" id="navLinks">
-      <li><a href="#about">01. About</a></li>
-      <li><a href="#experience">02. Experience</a></li>
-      <li><a href="#projects">03. Projects</a></li>
-      <li><a href="#contact">04. Contact</a></li>
-    </ul>
-  </nav>
+  <!-- Full-Screen Film Grain & Volumetric Cursor Lighting -->
+  <div class="film-grain" aria-hidden="true"></div>
+  <div class="volumetric-light" aria-hidden="true"></div>
 
-  <!-- ═══════════════ HERO ══════════════ -->
-  <section id="hero">
-    <div class="container">
-      <div class="hero-frame">
-        <p class="hero-greeting">👋 &nbsp;Welcome to my portfolio</p>
-        <h1 class="hero-name">Hi, I'm <em>Yusuf Khan.</em></h1>
-        <p class="hero-headline">Vibe Coder ⚡ &amp; B.Tech Innovator&nbsp;|&nbsp;Aspiring Automation QA</p>
-        <p class="hero-sub">Building autonomous robotics controllers, agentic data pipelines, and secure local AI workbenches while bridging hardware diagnostics with automated software workflows.</p>
-        <a href="#projects" class="btn-primary">
-          View My Work
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  <!-- Centerpiece Interactive 3D WebGL Canvas (The "God Particle" Gooey Sphere) -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- Reusable SVG Defs for Organic Gnarled Branches, Leaves & Filters -->
+  <svg width="0" height="0" class="hidden" aria-hidden="true">
+    <defs>
+      <!-- Black Silhouette Leaf Left -->
+      <g id="black-leaf-l">
+        <path d="M0,0 C-10,-8 -24,-6 -32,4 C-22,12 -8,10 0,0 Z" fill="#050608" stroke="#1f2823" stroke-width="0.9"/>
+        <path d="M0,0 C-11,0 -21,2 -29,4" stroke="#d49b27" stroke-width="0.6" stroke-opacity="0.45" fill="none"/>
+      </g>
+      <!-- Black Silhouette Leaf Right -->
+      <g id="black-leaf-r">
+        <path d="M0,0 C10,-9 25,-7 34,3 C23,12 9,10 0,0 Z" fill="#050608" stroke="#1f2823" stroke-width="0.9"/>
+        <path d="M0,0 C12,-1 22,1 30,3" stroke="#d49b27" stroke-width="0.6" stroke-opacity="0.45" fill="none"/>
+      </g>
+      <!-- Sharp Pointed Winden Pine / Ash Leaf -->
+      <g id="sharp-leaf">
+        <path d="M0,0 C-6,-14 -3,-26 0,-36 C4,-25 7,-13 0,0 Z" fill="#040507" stroke="#26332c" stroke-width="0.8"/>
+        <path d="M0,0 L0,-31" stroke="#d49b27" stroke-width="0.65" stroke-opacity="0.5"/>
+      </g>
+    </defs>
+  </svg>
+
+  <!-- ═══════════════ TOP NAVIGATION BAR ═══════════════ -->
+  <header class="fixed top-0 left-0 right-0 z-50 border-b border-slatefog/30 bg-abyss/80 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between">
+      <!-- Brand / Triquetra Node -->
+      <a href="#hero" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-lg border border-amber/60 bg-charcoal flex items-center justify-center shadow-[0_0_15px_rgba(212,155,39,0.2)] group-hover:bg-amber group-hover:text-abyss transition-all">
+          <!-- Triquetra SVG -->
+          <svg class="w-6 h-6 text-amber group-hover:text-abyss transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3">
+            <path d="M32 8 C46 20, 48 42, 32 54 C16 42, 18 20, 32 8 Z" />
+            <path d="M10 46 C26 48, 46 38, 50 20 C34 16, 16 28, 10 46 Z" />
+            <path d="M54 46 C48 28, 30 16, 14 20 C18 38, 38 48, 54 46 Z" />
+            <circle cx="32" cy="34" r="4" fill="currentColor"/>
+          </svg>
+        </div>
+        <div>
+          <span class="font-cinzel font-extrabold tracking-widest text-lg text-bone block leading-none">YUSUF KHAN<span class="text-amber">.</span></span>
+          <span class="font-mono text-[10px] tracking-[0.2em] text-slatefog uppercase block mt-0.5">WINDEN // NODE 33</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden md:flex items-center gap-7 font-mono text-xs uppercase tracking-[0.16em]">
+        <a href="#about" class="nav-link text-bone/75 hover:text-amber transition-colors py-1">01. About</a>
+        <a href="#experience" class="nav-link text-bone/75 hover:text-amber transition-colors py-1">02. Experience</a>
+        <a href="#projects" class="nav-link text-bone/75 hover:text-amber transition-colors py-1 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-amber animate-pulse"></span>
+          03. The Crate
         </a>
+        <a href="#contact" class="nav-link text-bone/75 hover:text-amber transition-colors py-1">04. Signal</a>
+      </nav>
+
+      <!-- Anomaly Pulse & Audio HUD Controls -->
+      <div class="flex items-center gap-2.5">
+        <button id="hudPulseBtn" type="button" class="px-3.5 py-2 rounded-md border border-amber/60 bg-charcoal/90 hover:bg-amber hover:text-abyss text-amber font-mono text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(212,155,39,0.18)]" title="Pulse the 3D Dark Matter Anomaly">
+          <span class="w-2 h-2 rounded-full bg-amber animate-ping"></span>
+          <span class="hidden sm:inline">Pulse Anomaly</span>
+        </button>
+
+        <button id="soundToggleBtn" type="button" class="p-2 rounded-md border border-slatefog/40 bg-charcoal/80 hover:border-amber text-bone/80 hover:text-amber font-mono text-xs transition-all" aria-label="Toggle Cave Synth & Vinyl Scratch Audio" title="Toggle Web Audio Synth">
+          <span id="soundIcon">🔇</span>
+        </button>
+
+        <!-- Mobile Menu Toggle -->
+        <button id="mobileMenuBtn" type="button" class="md:hidden p-2 rounded-md border border-slatefog/40 bg-charcoal text-bone hover:border-amber" aria-label="Open Menu">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
       </div>
     </div>
-  </section>
 
-  <!-- ═══════════════ ABOUT / SKILLS ════ -->
-  <section id="about">
-    <div class="container">
-      <span class="section-label reveal">01. About me</span>
-      <h2 class="section-heading reveal reveal-delay-1">Detail-oriented.<br>Systems-minded.</h2>
-
-      <div class="about-grid">
-        <!-- Redesigned Left Bio Text -->
-        <div class="about-text reveal reveal-delay-2">
-          <p>
-            I am a systems-focused developer and B.Tech innovator specializing in <strong>Python, C/C++, and JavaScript</strong>. My work focuses on building deterministic, fault-tolerant software across <strong>Autonomous Robotics, Agentic AI Workflows, and Software Quality Assurance</strong>.
-          </p>
-          <p>
-            Whether I am architecting multi-tier sensor-fusion loops that combine 360° LiDAR with local Vision-Language Models, deploying conversational data analysis agents, or testing physical RF hardware circuits, I thrive at the boundary where intelligent software meets real-world execution.
-          </p>
-          <p>
-            I enjoy turning complex, failure-prone workflows into clean, reproducible, and rigorously benchmarked systems.
-          </p>
-        </div>
-
-        <!-- Redesigned Right Skills Panel (Old Skills + Robot & Data Agent Skills) -->
-        <div class="skills-container reveal reveal-delay-3">
-          <div class="skills-group">
-            <p class="skills-group-title">Core Languages &amp; QA Foundations</p>
-            <div class="skills-wrap">
-              <span class="skill-tag highlight">Python</span>
-              <span class="skill-tag highlight">C / C++</span>
-              <span class="skill-tag">SQL</span>
-              <span class="skill-tag">JavaScript</span>
-              <span class="skill-tag">API Automation</span>
-              <span class="skill-tag">Root-Cause Analysis</span>
-              <span class="skill-tag">Hardware Prototyping</span>
-            </div>
-          </div>
-
-          <div class="skills-group">
-            <p class="skills-group-title">Autonomous Robotics &amp; Computer Vision</p>
-            <div class="skills-wrap">
-              <span class="skill-tag highlight">Webots Simulation</span>
-              <span class="skill-tag highlight">YOLOv8 &amp; OpenCV (HSV)</span>
-              <span class="skill-tag">360° LiDAR Sensor Fusion</span>
-              <span class="skill-tag">Subsumption Architecture</span>
-              <span class="skill-tag">Moondream VLM</span>
-              <span class="skill-tag">TurtleBot3 Control</span>
-              <span class="skill-tag">NumPy</span>
-            </div>
-          </div>
-
-          <div class="skills-group">
-            <p class="skills-group-title">AI Agents, Data &amp; Local LLM Infrastructure</p>
-            <div class="skills-wrap">
-              <span class="skill-tag highlight">LangChain &amp; LangGraph</span>
-              <span class="skill-tag highlight">Streamlit</span>
-              <span class="skill-tag">Ollama / Local LLMs</span>
-              <span class="skill-tag">AnythingLLM</span>
-              <span class="skill-tag">Pandas Data Analysis</span>
-              <span class="skill-tag">Agentic Workflows</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- Mobile Nav Drawer -->
+    <div id="mobileMenu" class="hidden md:hidden border-b border-slatefog/30 bg-abyss/95 backdrop-blur-xl px-6 py-5 space-y-3 font-mono text-sm uppercase tracking-widest">
+      <a href="#about" class="block py-2 text-bone hover:text-amber border-b border-slatefog/15">01. About &amp; Skills</a>
+      <a href="#experience" class="block py-2 text-bone hover:text-amber border-b border-slatefog/15">02. Experience Log</a>
+      <a href="#projects" class="block py-2 text-amber font-bold border-b border-slatefog/15">03. The Crate (Projects)</a>
+      <a href="#contact" class="block py-2 text-bone hover:text-amber">04. Transmit Signal</a>
     </div>
-  </section>
+  </header>
 
-  <!-- ═══════════════ EXPERIENCE ════════ -->
-  <section id="experience">
-    <div class="container">
-      <span class="section-label reveal">02. Career</span>
-      <h2 class="section-heading reveal reveal-delay-1">Experience</h2>
-      <div class="timeline">
-        <div class="timeline-item reveal reveal-delay-2">
-          <div class="timeline-dot"></div>
-          <p class="timeline-meta">June 2026 – Present</p>
-          <p class="timeline-role">Technical Contributor / Course Management</p>
-          <p class="timeline-company">Bluecollar Pvt Ltd</p>
-          <ul class="timeline-highlights">
-            <li>Streamlined content delivery by creating API-driven Python scripts to programmatically generate 60-day course curriculums.</li>
-            <li>Structured technical training modules for Python, Data Analysis, and C++ programs.</li>
-          </ul>
-        </div>
-      </div>
+  <!-- ═══════════════ FLOATING ANOMALY TELEMETRY HUD ═══════════════ -->
+  <aside class="fixed bottom-5 left-5 z-40 hidden lg:flex items-center gap-4 px-4 py-2.5 rounded-lg border border-slatefog/30 bg-abyss/80 backdrop-blur-md font-mono text-[11px] text-slatefog">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-amber"></span>
+      <span class="text-bone/90 font-bold">GOD PARTICLE:</span>
+      <span id="hudAnomalyState" class="text-amber">STABLE // 60FPS</span>
     </div>
-  </section>
+    <span class="text-slatefog/40">|</span>
+    <div>FREQ: <span id="hudFreqReadout" class="text-bone">1.42 Hz</span></div>
+    <span class="text-slatefog/40">|</span>
+    <div>CYCLE: <span class="text-amber">1953 • 1986 • 2026</span></div>
+  </aside>
 
-  <!-- ═══════════════ PROJECTS ══════════ -->
-  <section id="projects">
-    <div class="container">
-      <span class="section-label reveal">03. Work</span>
-      <h2 class="section-heading reveal reveal-delay-1">Featured Projects</h2>
-
-      <div class="projects-grid">
-
-        <!-- NEW PROJECT 1: ROBOT NAVIGATION -->
-        <div class="project-card featured reveal reveal-delay-2">
-          <div class="project-top-meta">
-            <span class="project-index">01 // ROBOTICS &amp; VLM</span>
-            <div class="project-icon">🤖</div>
+  <main>
+    <!-- ═══════════════ HERO SECTION ═══════════════ -->
+    <section id="hero" class="min-h-screen pt-28 pb-20 px-4 sm:px-8 flex items-center relative">
+      <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        
+        <!-- Left Column: Botanical Title + Bio + CTAs -->
+        <div class="lg:col-span-8 space-y-6">
+          <!-- Temporal Coordinate Badge -->
+          <div class="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full border border-amber/40 bg-pine/40 backdrop-blur-md">
+            <span class="w-2 h-2 rounded-full bg-amber animate-ping"></span>
+            <span class="font-mono text-xs tracking-[0.2em] uppercase text-amber font-semibold">
+              SIC MUNDUS CREATUS EST // WINDEN NODE 2026
+            </span>
           </div>
-          <h3 class="project-title">Autonomous Navigation &amp; Sensor-Fusion Robot</h3>
-          <p class="project-desc">
-            Engineered a three-tier subsumption controller for a TurtleBot3 in Webots combining 360° LiDAR obstacle flanking (Priority 1), YOLOv8n + OpenCV HSV visual servoing (Priority 2), and asynchronous Moondream VLM semantic exploration via Ollama (Priority 3). Validated across a 5-stage benchmark suite with sub-32ms reactive loop inference and 0.20m zero-circling docking.
+
+          <!-- Botanical Hero Display Typography: "YUSUF KHAN." with thick black branches & leaves -->
+          <div class="botanical-header-wrap my-2 select-none">
+            <!-- BACK LAYER: Thick Gnarled Black Branches & Leaves Behind Text -->
+            <svg class="botanical-svg-back" viewBox="0 0 900 260" fill="none" preserveAspectRatio="none">
+              <!-- Thick Gnarled Main Root Branch Behind Letters -->
+              <path class="branch-path" d="M-30,210 C90,190 150,75 290,95 C430,115 510,200 660,140 C760,100 830,50 930,65" stroke="#040507" stroke-width="18" stroke-linecap="round"/>
+              <path class="branch-path" d="M-30,210 C90,190 150,75 290,95 C430,115 510,200 660,140 C760,100 830,50 930,65" stroke="#16241d" stroke-width="3" stroke-linecap="round" stroke-dasharray="14 22"/>
+              <!-- Secondary Upper Offshoot Branches -->
+              <path class="branch-path" d="M140,125 C175,65 220,30 285,18" stroke="#050608" stroke-width="10" stroke-linecap="round"/>
+              <path class="branch-path" d="M470,152 C530,85 585,35 670,22" stroke="#050608" stroke-width="11" stroke-linecap="round"/>
+              <path class="branch-path" d="M680,132 C740,175 810,215 890,225" stroke="#050608" stroke-width="9" stroke-linecap="round"/>
+              <!-- Silhouette Black Leaves Sprouting Behind -->
+              <g class="leaf-cluster" transform="translate(185, 62) rotate(-25) scale(1.35)"><use href="#black-leaf-l"/></g>
+              <g class="leaf-cluster-alt" transform="translate(245, 28) rotate(15) scale(1.25)"><use href="#black-leaf-r"/></g>
+              <g class="leaf-cluster" transform="translate(555, 68) rotate(-30) scale(1.4)"><use href="#black-leaf-l"/></g>
+              <g class="leaf-cluster-alt" transform="translate(635, 32) rotate(20) scale(1.3)"><use href="#black-leaf-r"/></g>
+              <g class="leaf-cluster" transform="translate(795, 198) rotate(35) scale(1.3)"><use href="#black-leaf-r"/></g>
+              <g class="leaf-cluster-alt" transform="translate(855, 58) rotate(-15) scale(1.35)"><use href="#sharp-leaf"/></g>
+            </svg>
+
+            <!-- MIDDLE LAYER: Main Hero Display Title -->
+            <h1 class="botanical-title-text font-cinzel font-black text-5xl sm:text-7xl xl:text-[5.6rem] tracking-tight leading-[0.95] text-bone">
+              YUSUF <span class="text-transparent bg-clip-text bg-gradient-to-b from-amber via-amber to-ochre">KHAN.</span>
+            </h1>
+
+            <!-- FOREGROUND LAYER: Thick Black Branches & Leaves Weaving OVER the Letters -->
+            <svg class="botanical-svg-front" viewBox="0 0 900 260" fill="none" preserveAspectRatio="none">
+              <!-- Foreground Intertwining Creeper Vine -->
+              <path class="branch-path" d="M25,55 C135,95 205,195 340,155 C455,120 520,55 645,115 C730,155 795,140 875,90" stroke="#030405" stroke-width="9.5" stroke-linecap="round"/>
+              <!-- Sub-twigs wrapping letter stems -->
+              <path class="branch-path" d="M265,165 C295,205 335,230 385,238" stroke="#040507" stroke-width="6.5" stroke-linecap="round"/>
+              <path class="branch-path" d="M565,90 C595,50 635,28 680,20" stroke="#040507" stroke-width="6" stroke-linecap="round"/>
+              <path class="branch-path" d="M78,78 C105,40 135,22 175,15" stroke="#040507" stroke-width="6" stroke-linecap="round"/>
+              <!-- Foreground Black Leaves with Amber Veins -->
+              <g class="leaf-cluster" transform="translate(95, 72) rotate(22) scale(1.15)"><use href="#black-leaf-r"/></g>
+              <g class="leaf-cluster-alt" transform="translate(152, 22) rotate(-18) scale(1.1)"><use href="#black-leaf-l"/></g>
+              <g class="leaf-cluster" transform="translate(315, 162) rotate(-28) scale(1.25)"><use href="#black-leaf-l"/></g>
+              <g class="leaf-cluster-alt" transform="translate(358, 228) rotate(12) scale(1.15)"><use href="#black-leaf-r"/></g>
+              <g class="leaf-cluster" transform="translate(495, 92) rotate(-38) scale(1.2)"><use href="#sharp-leaf"/></g>
+              <g class="leaf-cluster-alt" transform="translate(618, 98) rotate(25) scale(1.25)"><use href="#black-leaf-r"/></g>
+              <g class="leaf-cluster" transform="translate(765, 145) rotate(-15) scale(1.2)"><use href="#black-leaf-l"/></g>
+              <!-- Glowing Radiation Amber Spores on the Branches -->
+              <circle cx="135" cy="88" r="2.5" fill="#d49b27" class="animate-ping"/>
+              <circle cx="335" cy="156" r="3" fill="#d49b27"/>
+              <circle cx="585" cy="95" r="2.5" fill="#d49b27"/>
+              <circle cx="745" cy="142" r="2.5" fill="#d49b27"/>
+            </svg>
+          </div>
+
+          <!-- Role Headline Banner -->
+          <div class="inline-block border-l-4 border-amber bg-charcoal/90 px-4 py-2.5 rounded-r-md shadow-lg">
+            <p class="font-mono text-sm sm:text-base font-bold text-bone tracking-wide">
+              Vibe Coder <span class="text-amber">⚡</span> &amp; B.Tech Innovator <span class="text-slatefog mx-1.5">|</span> <span class="text-amber">Aspiring Automation QA</span>
+            </p>
+          </div>
+
+          <!-- Sub-headline -->
+          <p class="text-base sm:text-lg text-bone/80 max-w-2xl leading-relaxed font-normal backdrop-blur-[2px]">
+            Building autonomous robotics controllers, agentic data pipelines, and secure local AI workbenches while bridging hardware diagnostics with automated software workflows.
           </p>
-          <div class="project-tags">
-            <span class="project-tag">Webots</span>
-            <span class="project-tag">Python</span>
-            <span class="project-tag">YOLOv8n</span>
-            <span class="project-tag">360° LiDAR</span>
-            <span class="project-tag">Moondream VLM</span>
-            <span class="project-tag">OpenCV</span>
-          </div>
-          <div class="project-action">
-            <a href="https://youtu.be/KHMDr0XOz0o" target="_blank" rel="noopener noreferrer" class="btn-project">
-              View Project (Video Demo)
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+
+          <!-- Primary & Interactive 3D CTA Buttons -->
+          <div class="flex flex-wrap items-center gap-4 pt-3">
+            <a href="#projects" class="group relative inline-flex items-center gap-3 px-7 py-4 rounded-md bg-amber text-abyss font-mono font-extrabold text-xs sm:text-sm uppercase tracking-[0.14em] shadow-[6px_6px_0px_#9e6b1b] hover:bg-bone hover:shadow-[8px_8px_0px_#d49b27] transition-all">
+              <span>Enter The Crate (Projects)</span>
+              <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
             </a>
+
+            <button id="heroDestabilizeBtn" type="button" class="inline-flex items-center gap-3 px-6 py-4 rounded-md border-2 border-amber/70 bg-abyss/80 hover:bg-pine/80 text-amber font-mono font-bold text-xs sm:text-sm uppercase tracking-[0.12em] transition-all backdrop-blur-md">
+              <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="9" stroke-dasharray="14 8"/>
+                <circle cx="12" cy="12" r="3" fill="currentColor"/>
+              </svg>
+              <span>Destabilize Anomaly</span>
+            </button>
           </div>
         </div>
 
-        <!-- NEW PROJECT 2: DATA ASSISTANT AGENT -->
-        <div class="project-card featured reveal reveal-delay-3">
-          <div class="project-top-meta">
-            <span class="project-index">02 // AGENTIC AI</span>
-            <div class="project-icon">📊</div>
-          </div>
-          <h3 class="project-title">Data Assistant Agent</h3>
-          <p class="project-desc">
-            Built and deployed an interactive AI data analysis agent using Streamlit and LangChain. Enables users to upload datasets, run natural-language analytical queries, automatically inspect schemas, execute validated Pandas/Python transformations, and generate structured visual and statistical insights.
-          </p>
-          <div class="project-tags">
-            <span class="project-tag">Python</span>
-            <span class="project-tag">Streamlit</span>
-            <span class="project-tag">LangChain</span>
-            <span class="project-tag">Pandas</span>
-            <span class="project-tag">AI Agents</span>
-          </div>
-          <div class="project-action">
-            <a href="https://data-assistant-agent-edxfdont6cxb98hzjecnub.streamlit.app/" target="_blank" rel="noopener noreferrer" class="btn-project">
-              View Project (Live App)
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
-            </a>
-          </div>
-        </div>
-
-        <!-- EXISTING PROJECT 3: AUTOMATED CURRICULUM GENERATOR -->
-        <div class="project-card reveal reveal-delay-2">
-          <div class="project-top-meta">
-            <span class="project-index">03 // AUTOMATION</span>
-            <div class="project-icon">⚙️</div>
-          </div>
-          <h3 class="project-title">Automated Curriculum Generator</h3>
-          <p class="project-desc">
-            Developed a Python automation script utilising local model API integration to dynamically structure and output programmatic text files for 60-day course plans.
-          </p>
-          <div class="project-tags">
-            <span class="project-tag">Python</span>
-            <span class="project-tag">API Automation</span>
-            <span class="project-tag">Local LLMs</span>
-          </div>
-        </div>
-
-        <!-- EXISTING PROJECT 4: LOCAL AI SANDBOX -->
-        <div class="project-card reveal reveal-delay-3">
-          <div class="project-top-meta">
-            <span class="project-index">04 // AI INFRASTRUCTURE</span>
-            <div class="project-icon">🧠</div>
-          </div>
-          <h3 class="project-title">Local AI Sandbox</h3>
-          <p class="project-desc">
-            Configured local language models using Ollama and AnythingLLM to test inference capabilities, troubleshoot system limits, and optimise deployment workflows on high-performance hardware.
-          </p>
-          <div class="project-tags">
-            <span class="project-tag">Ollama</span>
-            <span class="project-tag">AnythingLLM</span>
-            <span class="project-tag">Systems</span>
-          </div>
-        </div>
-
-        <!-- EXISTING PROJECT 5: HARDWARE PROTOTYPING -->
-        <div class="project-card reveal reveal-delay-4">
-          <div class="project-top-meta">
-            <span class="project-index">05 // EMBEDDED SYSTEMS</span>
-            <div class="project-icon">🔌</div>
-          </div>
-          <h3 class="project-title">Hardware Prototyping</h3>
-          <p class="project-desc">
-            Drafted technical specifications and conducted physical circuit testing for complex systems including RF emulators and agricultural moisture analysers.
-          </p>
-          <div class="project-tags">
-            <span class="project-tag">C / C++</span>
-            <span class="project-tag">RF Systems</span>
-            <span class="project-tag">Circuit Testing</span>
+        <!-- Right Column: Interactive God Particle Telemetry Card -->
+        <div class="lg:col-span-4 flex flex-col items-start lg:items-end justify-center">
+          <div class="cave-panel p-5 rounded-xl w-full max-w-xs space-y-4 border-l-4 border-l-amber">
+            <div class="flex items-center justify-between border-b border-slatefog/30 pb-2.5">
+              <span class="font-mono text-[11px] uppercase tracking-widest text-amber font-bold">ANOMALY CORE // 3D INTERACTIVE</span>
+              <span class="px-2 py-0.5 text-[10px] font-mono bg-pine text-amber rounded border border-amber/30">LIVE GLSL</span>
+            </div>
+            <p class="text-xs text-bone/75 leading-relaxed font-mono">
+              Move your cursor across the viewport to bend the ferrofluid dark matter tendrils. Scroll or trigger a temporal pulse to shift harmonic distortion modes.
+            </p>
+            <!-- Interactive Distortion Sliders -->
+            <div class="space-y-2.5 pt-1">
+              <div>
+                <div class="flex justify-between font-mono text-[10px] uppercase text-slatefog mb-1">
+                  <span>Tendril Spikes</span>
+                  <span id="spikeValLabel" class="text-amber">0.42</span>
+                </div>
+                <input id="spikeSlider" type="range" min="0.12" max="0.95" step="0.01" value="0.42" class="w-full accent-amber bg-abyss h-1.5 rounded-lg cursor-pointer" />
+              </div>
+              <div>
+                <div class="flex justify-between font-mono text-[10px] uppercase text-slatefog mb-1">
+                  <span>Simplex Frequency</span>
+                  <span id="freqValLabel" class="text-amber">1.45</span>
+                </div>
+                <input id="freqSlider" type="range" min="0.6" max="3.0" step="0.05" value="1.45" class="w-full accent-amber bg-abyss h-1.5 rounded-lg cursor-pointer" />
+              </div>
+            </div>
           </div>
         </div>
 
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ═══════════════ CONTACT ═══════════ -->
-  <section id="contact">
-    <div class="container">
-      <span class="section-label reveal">04. Get in touch</span>
-      <h2 class="section-heading reveal reveal-delay-1">Let's build something robust.</h2>
-      <p class="contact-sub reveal reveal-delay-2">Open to roles in QA automation, AI infrastructure, and embedded systems. I'd love to hear from you.</p>
-      <a class="contact-email reveal reveal-delay-3" href="mailto:yusufkhan210807@gmail.com">yusufkhan210807@gmail.com</a>
-      
-      <div class="social-links reveal reveal-delay-4">
-        <a class="social-link" href="https://www.linkedin.com/in/yusuf-khan-5059a7381" target="_blank" rel="noopener noreferrer">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
-          LinkedIn
-        </a>
-        <a class="social-link" href="https://github.com/yusufkhan210807-wq" target="_blank" rel="noopener noreferrer">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-          GitHub
-        </a>
+    <!-- ═══════════════ 01. ABOUT & SKILLS SECTION ═══════════════ -->
+    <section id="about" class="py-28 px-4 sm:px-8 relative border-t border-slatefog/20">
+      <div class="max-w-7xl mx-auto">
+        
+        <!-- Botanical Section Header -->
+        <div class="mb-14">
+          <p class="font-mono text-xs uppercase tracking-[0.25em] text-amber mb-2 flex items-center gap-2">
+            <span class="w-6 h-[1px] bg-amber"></span> 01. ABOUT ME // WINDEN DOSSIER
+          </p>
+          <div class="botanical-header-wrap">
+            <!-- Back Branches -->
+            <svg class="botanical-svg-back" viewBox="0 0 700 160" fill="none">
+              <path class="branch-path" d="M-20,120 C110,95 240,35 390,75 C510,108 600,65 690,30" stroke="#040507" stroke-width="14" stroke-linecap="round"/>
+              <path class="branch-path" d="M180,68 C220,25 270,12 325,8" stroke="#040507" stroke-width="8" stroke-linecap="round"/>
+              <g class="leaf-cluster" transform="translate(245, 22) rotate(-20) scale(1.2)"><use href="#black-leaf-l"/></g>
+              <g class="leaf-cluster-alt" transform="translate(525, 88) rotate(25) scale(1.25)"><use href="#black-leaf-r"/></g>
+            </svg>
+            <!-- Title -->
+            <h2 class="botanical-title-text font-cinzel font-extrabold text-3xl sm:text-5xl text-bone tracking-tight">
+              Detail-oriented. <span class="text-amber">Systems-minded.</span>
+            </h2>
+            <!-- Front Branches -->
+            <svg class="botanical-svg-front" viewBox="0 0 700 160" fill="none">
+              <path class="branch-path" d="M35,35 C165,85 290,125 445,65 C530,32 610,70 675,110" stroke="#040507" stroke-width="7" stroke-linecap="round"/>
+              <g class="leaf-cluster" transform="translate(145, 68) rotate(18) scale(1.05)"><use href="#black-leaf-r"/></g>
+              <g class="leaf-cluster-alt" transform="translate(415, 72) rotate(-24) scale(1.1)"><use href="#black-leaf-l"/></g>
+              <circle cx="290" cy="95" r="2.2" fill="#d49b27"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Bio & Skills Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Left: Real Bio Dossier Card -->
+          <div class="lg:col-span-5 cave-panel rounded-xl p-7 sm:p-9 space-y-5 relative overflow-hidden">
+            <div class="flex items-center justify-between border-b border-slatefog/30 pb-3 font-mono text-xs text-slatefog">
+              <span>SUBJECT: YUSUF KHAN</span>
+              <span class="text-amber">CLEARANCE: LEVEL 01</span>
+            </div>
+
+            <p class="text-bone/90 leading-relaxed text-base">
+              I am a systems-focused developer and B.Tech innovator specializing in <strong class="text-amber font-semibold">Python, C/C++, and JavaScript</strong>. My work focuses on building deterministic, fault-tolerant software across <strong class="text-amber font-semibold">Autonomous Robotics, Agentic AI Workflows, and Software Quality Assurance</strong>.
+            </p>
+            <p class="text-bone/80 leading-relaxed text-base">
+              Whether I am architecting multi-tier sensor-fusion loops that combine 360° LiDAR with local Vision-Language Models, deploying conversational data analysis agents, or testing physical RF hardware circuits, I thrive at the boundary where intelligent software meets real-world execution.
+            </p>
+            <p class="text-bone/80 leading-relaxed text-base">
+              I enjoy turning complex, failure-prone workflows into clean, reproducible, and rigorously benchmarked systems.
+            </p>
+
+            <div class="pt-3 border-t border-slatefog/30 grid grid-cols-3 gap-3 text-center font-mono">
+              <div class="p-2.5 rounded bg-abyss/70 border border-slatefog/25">
+                <span class="block text-amber text-lg font-extrabold">&lt;32ms</span>
+                <span class="text-[10px] text-slatefog uppercase">Reactive Loop</span>
+              </div>
+              <div class="p-2.5 rounded bg-abyss/70 border border-slatefog/25">
+                <span class="block text-amber text-lg font-extrabold">3-Tier</span>
+                <span class="text-[10px] text-slatefog uppercase">Subsumption</span>
+              </div>
+              <div class="p-2.5 rounded bg-abyss/70 border border-slatefog/25">
+                <span class="block text-amber text-lg font-extrabold">5+</span>
+                <span class="text-[10px] text-slatefog uppercase">Core Systems</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Categorized Skills Matrix -->
+          <div class="lg:col-span-7 space-y-6">
+            
+            <!-- Group 1: Core Languages & QA Foundations -->
+            <div class="cave-panel rounded-xl p-6 sm:p-7">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-mono text-xs sm:text-sm font-bold uppercase tracking-[0.15em] text-amber flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-amber"></span>
+                  Core Languages &amp; QA Foundations
+                </h3>
+                <span class="font-mono text-[11px] text-slatefog">SYS // 01</span>
+              </div>
+              <div class="flex flex-wrap gap-2.5">
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-bold bg-amber text-abyss border border-amber">Python ★</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-bold bg-amber text-abyss border border-amber">C / C++ ★</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-medium bg-abyss/90 text-bone border border-slatefog/40">SQL</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-medium bg-abyss/90 text-bone border border-slatefog/40">JavaScript</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-medium bg-abyss/90 text-bone border border-slatefog/40">API Automation</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-medium bg-abyss/90 text-bone border border-slatefog/40">Root-Cause Analysis</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-medium bg-abyss/90 text-bone border border-slatefog/40">Hardware Prototyping</span>
+              </div>
+            </div>
+
+            <!-- Group 2: Autonomous Robotics & Computer Vision -->
+            <div class="cave-panel rounded-xl p-6 sm:p-7">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-mono text-xs sm:text-sm font-bold uppercase tracking-[0.15em] text-amber flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-amber"></span>
+                  Autonomous Robotics &amp; Computer Vision
+                </h3>
+                <span class="font-mono text-[11px] text-slatefog">SYS // 02</span>
+              </div>
+              <div class="flex flex-wrap gap-2.5">
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-bold bg-amber text-abyss border border-amber">Webots Simulation ★</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-bold bg-amber text-abyss border border-amber">YOLOv8 &amp; OpenCV (HSV) ★</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-medium bg-abyss/90 text-bone border border-slatefog/40">360° LiDAR Sensor Fusion</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-medium bg-abyss/90 text-bone border border-slatefog/40">Subsumption Architecture</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-medium bg-abyss/90 text-bone border border-slatefog/40">Moondream VLM</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-medium bg-abyss/90 text-bone border border-slatefog/40">TurtleBot3 Control</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-medium bg-abyss/90 text-bone border border-slatefog/40">NumPy</span>
+              </div>
+            </div>
+
+            <!-- Group 3: AI Agents, Data & Local LLM Infrastructure -->
+            <div class="cave-panel rounded-xl p-6 sm:p-7">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-mono text-xs sm:text-sm font-bold uppercase tracking-[0.15em] text-amber flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-amber"></span>
+                  AI Agents, Data &amp; Local LLM Infrastructure
+                </h3>
+                <span class="font-mono text-[11px] text-slatefog">SYS // 03</span>
+              </div>
+              <div class="flex flex-wrap gap-2.5">
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-bold bg-amber text-abyss border border-amber">LangChain &amp; LangGraph ★</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-bold bg-amber text-abyss border border-amber">Streamlit ★</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-medium bg-abyss/90 text-bone border border-slatefog/40">Ollama / Local LLMs</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-medium bg-abyss/90 text-bone border border-slatefog/40">AnythingLLM</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-medium bg-abyss/90 text-bone border border-slatefog/40">Pandas Data Analysis</span>
+                <span class="skill-pill px-3.5 py-2 rounded-md font-mono text-xs font-medium bg-abyss/90 text-bone border border-slatefog/40">Agentic Workflows</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════ 02. EXPERIENCE SECTION ═══════════════ -->
+    <section id="experience" class="py-24 px-4 sm:px-8 relative border-t border-slatefog/20">
+      <div class="max-w-7xl mx-auto">
+        
+        <!-- Botanical Section Header -->
+        <div class="mb-14">
+          <p class="font-mono text-xs uppercase tracking-[0.25em] text-amber mb-2 flex items-center gap-2">
+            <span class="w-6 h-[1px] bg-amber"></span> 02. TEMPORAL LOG // CAREER
+          </p>
+          <div class="botanical-header-wrap">
+            <svg class="botanical-svg-back" viewBox="0 0 600 150" fill="none">
+              <path class="branch-path" d="M-15,105 C120,60 275,115 430,55 C500,28 555,45 615,25" stroke="#040507" stroke-width="14" stroke-linecap="round"/>
+              <g class="leaf-cluster" transform="translate(175, 72) rotate(-25) scale(1.25)"><use href="#black-leaf-l"/></g>
+              <g class="leaf-cluster-alt" transform="translate(465, 42) rotate(18) scale(1.2)"><use href="#black-leaf-r"/></g>
+            </svg>
+            <h2 class="botanical-title-text font-cinzel font-extrabold text-3xl sm:text-5xl text-bone tracking-tight">
+              Experience <span class="text-amber">Chronicle</span>
+            </h2>
+            <svg class="botanical-svg-front" viewBox="0 0 600 150" fill="none">
+              <path class="branch-path" d="M40,30 C160,95 310,45 470,95" stroke="#040507" stroke-width="6.5" stroke-linecap="round"/>
+              <g class="leaf-cluster" transform="translate(260, 68) rotate(20) scale(1.1)"><use href="#black-leaf-r"/></g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Timeline Node Card -->
+        <div class="relative pl-6 sm:pl-12 border-l-2 border-amber/60 max-w-4xl">
+          <!-- Glowing Node Orb -->
+          <div class="absolute -left-[11px] top-8 w-5 h-5 rounded-full bg-abyss border-4 border-amber shadow-[0_0_18px_#d49b27]"></div>
+
+          <div class="cave-panel rounded-xl p-7 sm:p-9 relative overflow-hidden">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+              <span class="px-3.5 py-1 rounded bg-amber text-abyss font-mono text-xs font-extrabold uppercase tracking-wider">
+                June 2026 – Present
+              </span>
+              <span class="font-mono text-xs text-slatefog uppercase tracking-widest">
+                CYCLE NODE // ACTIVE
+              </span>
+            </div>
+
+            <h3 class="font-syne font-extrabold text-2xl sm:text-3xl text-bone mb-1">
+              Technical Contributor / Course Management
+            </h3>
+            <p class="font-mono text-sm sm:text-base font-bold text-amber mb-6">
+              Bluecollar Pvt Ltd
+            </p>
+
+            <ul class="space-y-3.5 text-bone/85 text-base">
+              <li class="flex items-start gap-3">
+                <span class="font-mono text-amber font-bold mt-0.5">→</span>
+                <span>Streamlined content delivery by creating API-driven Python scripts to programmatically generate 60-day course curriculums.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="font-mono text-amber font-bold mt-0.5">→</span>
+                <span>Structured technical training modules for Python, Data Analysis, and C++ programs.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════ 03. HIP-HOP STYLE PROJECTS CAROUSEL ("THE CRATE") ═══════════════ -->
+    <section id="projects" class="py-28 relative border-t border-slatefog/20 overflow-hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-8 mb-6">
+        
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-amber/15 border border-amber/40 font-mono text-xs text-amber uppercase tracking-[0.2em] mb-3">
+              <span>03. THE CRATE // 90s MIXTAPE ARCHIVE</span>
+            </div>
+
+            <!-- Botanical Header for Projects -->
+            <div class="botanical-header-wrap">
+              <svg class="botanical-svg-back" viewBox="0 0 750 160" fill="none">
+                <path class="branch-path" d="M-20,125 C130,65 290,120 460,50 C570,15 660,75 760,35" stroke="#040507" stroke-width="15" stroke-linecap="round"/>
+                <g class="leaf-cluster" transform="translate(190, 82) rotate(-25) scale(1.3)"><use href="#black-leaf-l"/></g>
+                <g class="leaf-cluster-alt" transform="translate(495, 38) rotate(20) scale(1.25)"><use href="#black-leaf-r"/></g>
+              </svg>
+              <h2 class="botanical-title-text font-syne font-extrabold text-4xl sm:text-6xl uppercase tracking-tight text-bone">
+                Featured <span class="text-amber">Pressings</span>
+              </h2>
+              <svg class="botanical-svg-front" viewBox="0 0 750 160" fill="none">
+                <path class="branch-path" d="M25,40 C175,110 340,45 520,105 C605,130 675,85 735,60" stroke="#040507" stroke-width="7.5" stroke-linecap="round"/>
+                <g class="leaf-cluster" transform="translate(310, 72) rotate(18) scale(1.15)"><use href="#black-leaf-r"/></g>
+                <g class="leaf-cluster-alt" transform="translate(565, 112) rotate(-22) scale(1.15)"><use href="#black-leaf-l"/></g>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Crate Controls: Prev / Scratch / Next & Drag Hint -->
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="font-mono text-xs text-slatefog uppercase tracking-wider mr-2 hidden sm:inline">
+              [DRAG SLEEVES OR USE DECK CONTROLS]
+            </span>
+            <button id="cratePrevBtn" type="button" class="px-4 py-3 bg-charcoal border-2 border-bone text-bone hover:border-amber hover:text-amber font-mono text-xs font-extrabold uppercase tracking-wider transition-all shadow-[4px_4px_0px_#d49b27]">
+              ◀ PREV
+            </button>
+            <button id="crateScratchBtn" type="button" class="px-4 py-3 bg-amber border-2 border-bone text-abyss hover:bg-bone font-mono text-xs font-extrabold uppercase tracking-wider transition-all shadow-[4px_4px_0px_#9e6b1b]">
+              ⚡ SCRATCH DECK
+            </button>
+            <button id="crateNextBtn" type="button" class="px-4 py-3 bg-charcoal border-2 border-bone text-bone hover:border-amber hover:text-amber font-mono text-xs font-extrabold uppercase tracking-wider transition-all shadow-[4px_4px_0px_#d49b27]">
+              NEXT ▶
+            </button>
+          </div>
+        </div>
+
+        <!-- Tracklist Scrubber Pills -->
+        <div class="flex flex-wrap items-center gap-2 mt-6 font-mono text-xs" id="crateTrackPills">
+          <button type="button" data-index="0" class="track-pill px-3 py-1.5 border border-amber bg-amber text-abyss font-extrabold uppercase">SIDE A-01 // ROBOTICS VLM</button>
+          <button type="button" data-index="1" class="track-pill px-3 py-1.5 border border-slatefog/50 bg-charcoal text-bone/80 hover:border-amber uppercase">SIDE A-02 // DATA AGENT</button>
+          <button type="button" data-index="2" class="track-pill px-3 py-1.5 border border-slatefog/50 bg-charcoal text-bone/80 hover:border-amber uppercase">SIDE B-03 // CURRICULUM GEN</button>
+          <button type="button" data-index="3" class="track-pill px-3 py-1.5 border border-slatefog/50 bg-charcoal text-bone/80 hover:border-amber uppercase">SIDE B-04 // LOCAL AI SANDBOX</button>
+          <button type="button" data-index="4" class="track-pill px-3 py-1.5 border border-slatefog/50 bg-charcoal text-bone/80 hover:border-amber uppercase">SIDE B-05 // RF HARDWARE</button>
+        </div>
       </div>
 
-      <p class="footer-line">© 2026 Yusuf Khan. Built with care.</p>
+      <!-- KINETIC DRAG-AND-SNAP HIP-HOP CAROUSEL VIEWPORT -->
+      <div id="crateViewport" class="crate-viewport" aria-label="Hip-Hop Vinyl Mixtape Projects Carousel">
+        <div id="crateTrack" class="crate-track">
+
+          <!-- ═══ TRACK 01: AUTONOMOUS NAVIGATION & SENSOR-FUSION ROBOT ═══ -->
+          <article class="mixtape-card active-card p-6 sm:p-8 flex flex-col justify-between" data-index="0">
+            <!-- Peeking 12" Vinyl Record Disc -->
+            <div class="vinyl-disc" aria-hidden="true">
+              <div class="w-16 h-16 rounded-full bg-amber border-4 border-abyss flex flex-col items-center justify-center text-center font-mono text-[8px] font-black text-abyss leading-tight">
+                <span>YK-001</span>
+                <span>33⅓ RPM</span>
+                <div class="w-2.5 h-2.5 rounded-full bg-abyss mt-0.5"></div>
+              </div>
+            </div>
+
+            <div class="relative z-10">
+              <!-- Sleeve Header Metadata -->
+              <div class="flex items-center justify-between gap-2 pb-4 mb-5 border-b-2 border-bone/20">
+                <div>
+                  <span class="font-mono text-[11px] font-extrabold uppercase tracking-widest text-amber block">SIDE A // TRACK 01</span>
+                  <span class="font-mono text-xs text-slatefog">CAT# YK-2026-VLM • 32MS LOOP</span>
+                </div>
+                <div class="advisory-stamp px-2 py-1 text-center">
+                  <span class="text-[8px] bg-bone text-abyss px-1 font-bold">PARENTAL ADVISORY</span>
+                  <span class="text-[10px] py-0.5 font-extrabold tracking-widest text-amber">AUTONOMOUS SYS</span>
+                </div>
+              </div>
+
+              <!-- Album Cover Visual Banner -->
+              <div class="mb-5 p-4 bg-gradient-to-br from-pine via-abyss to-charcoal border-2 border-amber/60 relative overflow-hidden">
+                <div class="flex items-center justify-between">
+                  <span class="font-anton text-3xl sm:text-4xl uppercase tracking-wide text-bone leading-none">ROBOTICS &amp; VLM</span>
+                  <span class="text-3xl">🤖</span>
+                </div>
+                <div class="mt-2 font-mono text-[10px] text-amber uppercase tracking-widest">
+                  360° LIDAR FLANKING + YOLOV8N + MOONDREAM
+                </div>
+              </div>
+
+              <!-- Project Title -->
+              <h3 class="font-syne font-extrabold text-2xl sm:text-[1.65rem] text-bone leading-tight mb-3">
+                Autonomous Navigation &amp; Sensor-Fusion Robot
+              </h3>
+
+              <!-- Project Description -->
+              <p class="text-sm text-bone/80 leading-relaxed mb-6">
+                Engineered a three-tier subsumption controller for a TurtleBot3 in Webots combining 360° LiDAR obstacle flanking (Priority 1), YOLOv8n + OpenCV HSV visual servoing (Priority 2), and asynchronous Moondream VLM semantic exploration via Ollama (Priority 3). Validated across a 5-stage benchmark suite with sub-32ms reactive loop inference and 0.20m zero-circling docking.
+              </p>
+            </div>
+
+            <div class="relative z-10 pt-4 border-t-2 border-dashed border-bone/20">
+              <!-- Tech Tags -->
+              <div class="flex flex-wrap gap-1.5 mb-5">
+                <span class="px-2.5 py-1 bg-abyss border border-amber/60 font-mono text-[11px] font-bold text-amber">Webots</span>
+                <span class="px-2.5 py-1 bg-abyss border border-bone/30 font-mono text-[11px] font-bold text-bone">Python</span>
+                <span class="px-2.5 py-1 bg-abyss border border-bone/30 font-mono text-[11px] font-bold text-bone">YOLOv8n</span>
+                <span class="px-2.5 py-1 bg-abyss border border-bone/30 font-mono text-[11px] font-bold text-bone">360° LiDAR</span>
+                <span class="px-2.5 py-1 bg-abyss border border-bone/30 font-mono text-[11px] font-bold text-bone">Moondream VLM</span>
+                <span class="px-2.5 py-1 bg-abyss border border-bone/30 font-mono text-[11px] font-bold text-bone">OpenCV</span>
+              </div>
+
+              <!-- Action Button + Barcode -->
+              <div class="flex items-center justify-between gap-3">
+                <a href="https://youtu.be/KHMDr0XOz0o" target="_blank" rel="noopener noreferrer" class="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 bg-amber hover:bg-bone text-abyss font-mono text-xs font-extrabold uppercase tracking-wider transition-colors">
+                  <span>▶ Watch Video Demo</span>
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M7 7h10v10"/></svg>
+                </a>
+                <!-- SVG Barcode -->
+                <svg class="w-16 h-9 text-bone/70 shrink-0" viewBox="0 0 80 36" fill="currentColor">
+                  <rect x="2" y="2" width="3" height="32"/><rect x="8" y="2" width="1.5" height="32"/><rect x="12" y="2" width="4" height="32"/><rect x="19" y="2" width="2" height="32"/><rect x="24" y="2" width="1.5" height="32"/><rect x="28" y="2" width="5" height="32"/><rect x="36" y="2" width="2" height="32"/><rect x="41" y="2" width="3" height="32"/><rect x="47" y="2" width="1.5" height="32"/><rect x="51" y="2" width="4" height="32"/><rect x="58" y="2" width="2" height="32"/><rect x="63" y="2" width="5" height="32"/><rect x="71" y="2" width="2" height="32"/><rect x="75" y="2" width="3" height="32"/>
+                </svg>
+              </div>
+            </div>
+          </article>
+
+          <!-- ═══ TRACK 02: DATA ASSISTANT AGENT ═══ -->
+          <article class="mixtape-card p-6 sm:p-8 flex flex-col justify-between" data-index="1">
+            <div class="vinyl-disc" aria-hidden="true">
+              <div class="w-16 h-16 rounded-full bg-bone border-4 border-abyss flex flex-col items-center justify-center text-center font-mono text-[8px] font-black text-abyss leading-tight">
+                <span>YK-002</span>
+                <span>45 RPM</span>
+                <div class="w-2.5 h-2.5 rounded-full bg-abyss mt-0.5"></div>
+              </div>
+            </div>
+
+            <div class="relative z-10">
+              <div class="flex items-center justify-between gap-2 pb-4 mb-5 border-b-2 border-bone/20">
+                <div>
+                  <span class="font-mono text-[11px] font-extrabold uppercase tracking-widest text-amber block">SIDE A // TRACK 02</span>
+                  <span class="font-mono text-xs text-slatefog">CAT# YK-2026-AGT • STREAMLIT</span>
+                </div>
+                <div class="advisory-stamp px-2 py-1 text-center">
+                  <span class="text-[8px] bg-bone text-abyss px-1 font-bold">PARENTAL ADVISORY</span>
+                  <span class="text-[10px] py-0.5 font-extrabold tracking-widest text-amber">AGENTIC AI</span>
+                </div>
+              </div>
+
+              <div class="mb-5 p-4 bg-gradient-to-br from-charcoal via-abyss to-pine border-2 border-amber/60">
+                <div class="flex items-center justify-between">
+                  <span class="font-anton text-3xl sm:text-4xl uppercase tracking-wide text-bone leading-none">AGENTIC ANALYTICS</span>
+                  <span class="text-3xl">📊</span>
+                </div>
+                <div class="mt-2 font-mono text-[10px] text-amber uppercase tracking-widest">
+                  NL QUERIES • SCHEMA INSPECTION • PANDAS
+                </div>
+              </div>
+
+              <h3 class="font-syne font-extrabold text-2xl sm:text-[1.65rem] text-bone leading-tight mb-3">
+                Data Assistant Agent
+              </h3>
+
+              <p class="text-sm text-bone/80 leading-relaxed mb-6">
+                Built and deployed an interactive AI data analysis agent using Streamlit and LangChain. Enables users to upload datasets, run natural-language analytical queries, automatically inspect schemas, execute validated Pandas/Python transformations, and generate structured visual and statistical insights.
+              </p>
+            </div>
+
+            <div class="relative z-10 pt-4 border-t-2 border-dashed border-bone/20">
+              <div class="flex flex-wrap gap-1.5 mb-5">
+                <span class="px-2.5 py-1 bg-abyss border border-amber/60 font-mono text-[11px] font-bold text-amber">Python</span>
+                <span class="px-2.5 py-1 bg-abyss border border-bone/30 font-mono text-[11px] font-bold text-bone">Streamlit</span>
+                <span class="px-2.5 py-1 bg-abyss border border-bone/30 font-mono text-[11px] font-bold text-bone">LangChain</span>
+                <span class="px-2.5 py-1 bg-abyss border border-bone/30 font-mono text-[11px] font-bold text-bone">Pandas</span>
+                <span class="px-2.5 py-1 bg-abyss border border-bone/30 font-mono text-[11px] font-bold text-bone">AI Agents</span>
+              </div>
+
+              <div class="flex items-center justify-between gap-3">
+                <a href="https://data-assistant-agent-edxfdont6cxb98hzjecnub.streamlit.app/" target="_blank" rel="noopener noreferrer" class="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 bg-amber hover:bg-bone text-abyss font-mono text-xs font-extrabold uppercase tracking-wider transition-colors">
+                  <span>⚡ Launch Live App</span>
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M7 7h10v10"/></svg>
+                </a>
+                <svg class="w-16 h-9 text-bone/70 shrink-0" viewBox="0 0 80 36" fill="currentColor">
+                  <rect x="2" y="2" width="4" height="32"/><rect x="9" y="2" width="2" height="32"/><rect x="14" y="2" width="3" height="32"/><rect x="20" y="2" width="1.5" height="32"/><rect x="25" y="2" width="4" height="32"/><rect x="32" y="2" width="2" height="32"/><rect x="37" y="2" width="5" height="32"/><rect x="45" y="2" width="2" height="32"/><rect x="50" y="2" width="1.5" height="32"/><rect x="55" y="2" width="4" height="32"/><rect x="62" y="2" width="2" height="32"/><rect x="67" y="2" width="4" height="32"/><rect x="74" y="2" width="3" height="32"/>
+                </svg>
+              </div>
+            </div>
+          </article>
+
+          <!-- ═══ TRACK 03: AUTOMATED CURRICULUM GENERATOR ═══ -->
+          <article class="mixtape-card p-6 sm:p-8 flex flex-col justify-between" data-index="2">
+            <div class="vinyl-disc" aria-hidden="true">
+              <div class="w-16 h-16 rounded-full bg-ochre border-4 border-abyss flex flex-col items-center justify-center text-center font-mono text-[8px] font-black text-bone leading-tight">
+                <span>YK-003</span>
+                <span>33⅓ RPM</span>
+                <div class="w-2.5 h-2.5 rounded-full bg-abyss mt-0.5"></div>
+              </div>
+            </div>
+
+            <div class="relative z-10">
+              <div class="flex items-center justify-between gap-2 pb-4 mb-5 border-b-2 border-bone/20">
+                <div>
+                  <span class="font-mono text-[11px] font-extrabold uppercase tracking-widest text-amber block">SIDE B // TRACK 03</span>
+                  <span class="font-mono text-xs text-slatefog">CAT# YK-2026-AUT • 60-DAY GEN</span>
+                </div>
+                <div class="advisory-stamp px-2 py-1 text-center">
+                  <span class="text-[8px] bg-bone text-abyss px-1 font-bold">SYSTEMS ARCHIVE</span>
+                  <span class="text-[10px] py-0.5 font-extrabold tracking-widest text-amber">AUTOMATION</span>
+                </div>
+              </div>
+
+              <div class="mb-5 p-4 bg-gradient-to-br from-pine via-charcoal to-abyss border-2 border-bone/40">
+                <div class="flex items-center justify-between">
+                  <span class="font-anton text-3xl sm:text-4xl uppercase tracking-wide text-bone leading-none">PIPELINE SYNTH</span>
+                  <span class="text-3xl">⚙️</span>
+                </div>
+                <div class="mt-2 font-mono text-[10px] text-amber uppercase tracking-widest">
+                  LOCAL MODEL API • PROGRAMMATIC SYLLABUS
+                </div>
+              </div>
+
+              <h3 class="font-syne font-extrabold text-2xl sm:text-[1.65rem] text-bone leading-tight mb-3">
+                Automated Curriculum Generator
+              </h3>
+
+              <p class="text-sm text-bone/80 leading-relaxed mb-6">
+                Developed a Python automation script utilising local model API integration to dynamically structure and output programmatic text files for 60-day course plans.
+              </p>
+            </div>
+
+            <div class="relative z-10 pt-4 border-t-2 border-dashed border-bone/20">
+              <div class="flex flex-wrap gap-1.5 mb-5">
+                <span class="px-2.5 py-1 bg-abyss border border-amber/60 font-mono text-[11px] font-bold text-amber">Python</span>
+                <span class="px-2.5 py-1 bg-abyss border border-bone/30 font-mono text-[11px] font-bold text-bone">API Automation</span>
+                <span class="px-2.5 py-1 bg-abyss border border-bone/30 font-mono text-[11px] font-bold text-bone">Local LLMs</span>
+              </div>
+
+              <div class="flex items-center justify-between gap-3">
+                <span class="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 bg-charcoal border border-amber/50 text-amber font-mono text-xs font-bold uppercase tracking-wider">
+                  <span>INTERNAL PIPELINE // VERIFIED</span>
+                </span>
+                <svg class="w-16 h-9 text-bone/70 shrink-0" viewBox="0 0 80 36" fill="currentColor">
+                  <rect x="2" y="2" width="3" height="32"/><rect x="8" y="2" width="3" height="32"/><rect x="14" y="2" width="1.5" height="32"/><rect x="19" y="2" width="4" height="32"/><rect x="26" y="2" width="2" height="32"/><rect x="31" y="2" width="5" height="32"/><rect x="39" y="2" width="1.5" height="32"/><rect x="44" y="2" width="3" height="32"/><rect x="50" y="2" width="4" height="32"/><rect x="57" y="2" width="2" height="32"/><rect x="62" y="2" width="5" height="32"/><rect x="70" y="2" width="2" height="32"/><rect x="75" y="2" width="3" height="32"/>
+                </svg>
+              </div>
+            </div>
+          </article>
+
+          <!-- ═══ TRACK 04: LOCAL AI SANDBOX ═══ -->
+          <article class="mixtape-card p-6 sm:p-8 flex flex-col justify-between" data-index="3">
+            <div class="vinyl-disc" aria-hidden="true">
+              <div class="w-16 h-16 rounded-full bg-amber border-4 border-abyss flex flex-col items-center justify-center text-center font-mono text-[8px] font-black text-abyss leading-tight">
+                <span>YK-004</span>
+                <span>33⅓ RPM</span>
+                <div class="w-2.5 h-2.5 rounded-full bg-abyss mt-0.5"></div>
+              </div>
+            </div>
+
+            <div class="relative z-10">
+              <div class="flex items-center justify-between gap-2 pb-4 mb-5 border-b-2 border-bone/20">
+                <div>
+                  <span class="font-mono text-[11px] font-extrabold uppercase tracking-widest text-amber block">SIDE B // TRACK 04</span>
+                  <span class="font-mono text-xs text-slatefog">CAT# YK-2026-LLM • AIR-GAPPED</span>
+                </div>
+                <div class="advisory-stamp px-2 py-1 text-center">
+                  <span class="text-[8px] bg-bone text-abyss px-1 font-bold">SYSTEMS ARCHIVE</span>
+                  <span class="text-[10px] py-0.5 font-extrabold tracking-widest text-amber">AI INFRA</span>
+                </div>
+              </div>
+
+              <div class="mb-5 p-4 bg-gradient-to-br from-abyss via-pine to-charcoal border-2 border-bone/40">
+                <div class="flex items-center justify-between">
+                  <span class="font-anton text-3xl sm:text-4xl uppercase tracking-wide text-bone leading-none">LOCAL AI LAB</span>
+                  <span class="text-3xl">🧠</span>
+                </div>
+                <div class="mt-2 font-mono text-[10px] text-amber uppercase tracking-widest">
+                  OLLAMA • ANYTHINGLLM • INFERENCE TUNING
+                </div>
+              </div>
+
+              <h3 class="font-syne font-extrabold text-2xl sm:text-[1.65rem] text-bone leading-tight mb-3">
+                Local AI Sandbox
+              </h3>
+
+              <p class="text-sm text-bone/80 leading-relaxed mb-6">
+                Configured local language models using Ollama and AnythingLLM to test inference capabilities, troubleshoot system limits, and optimise deployment workflows on high-performance hardware.
+              </p>
+            </div>
+
+            <div class="relative z-10 pt-4 border-t-2 border-dashed border-bone/20">
+              <div class="flex flex-wrap gap-1.5 mb-5">
+                <span class="px-2.5 py-1 bg-abyss border border-amber/60 font-mono text-[11px] font-bold text-amber">Ollama</span>
+                <span class="px-2.5 py-1 bg-abyss border border-bone/30 font-mono text-[11px] font-bold text-bone">AnythingLLM</span>
+                <span class="px-2.5 py-1 bg-abyss border border-bone/30 font-mono text-[11px] font-bold text-bone">Systems</span>
+              </div>
+
+              <div class="flex items-center justify-between gap-3">
+                <span class="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 bg-charcoal border border-amber/50 text-amber font-mono text-xs font-bold uppercase tracking-wider">
+                  <span>LOCAL WORKBENCH // BENCHMARKED</span>
+                </span>
+                <svg class="w-16 h-9 text-bone/70 shrink-0" viewBox="0 0 80 36" fill="currentColor">
+                  <rect x="2" y="2" width="2" height="32"/><rect x="7" y="2" width="4" height="32"/><rect x="14" y="2" width="2" height="32"/><rect x="19" y="2" width="3" height="32"/><rect x="25" y="2" width="1.5" height="32"/><rect x="30" y="2" width="5" height="32"/><rect x="38" y="2" width="2" height="32"/><rect x="43" y="2" width="4" height="32"/><rect x="50" y="2" width="1.5" height="32"/><rect x="55" y="2" width="3" height="32"/><rect x="61" y="2" width="4" height="32"/><rect x="68" y="2" width="2" height="32"/><rect x="73" y="2" width="4" height="32"/>
+                </svg>
+              </div>
+            </div>
+          </article>
+
+          <!-- ═══ TRACK 05: HARDWARE PROTOTYPING ═══ -->
+          <article class="mixtape-card p-6 sm:p-8 flex flex-col justify-between" data-index="4">
+            <div class="vinyl-disc" aria-hidden="true">
+              <div class="w-16 h-16 rounded-full bg-bone border-4 border-abyss flex flex-col items-center justify-center text-center font-mono text-[8px] font-black text-abyss leading-tight">
+                <span>YK-005</span>
+                <span>45 RPM</span>
+                <div class="w-2.5 h-2.5 rounded-full bg-abyss mt-0.5"></div>
+              </div>
+            </div>
+
+            <div class="relative z-10">
+              <div class="flex items-center justify-between gap-2 pb-4 mb-5 border-b-2 border-bone/20">
+                <div>
+                  <span class="font-mono text-[11px] font-extrabold uppercase tracking-widest text-amber block">SIDE B // TRACK 05</span>
+                  <span class="font-mono text-xs text-slatefog">CAT# YK-2026-EMB • RF CIRCUITS</span>
+                </div>
+                <div class="advisory-stamp px-2 py-1 text-center">
+                  <span class="text-[8px] bg-bone text-abyss px-1 font-bold">HARDWARE LAB</span>
+                  <span class="text-[10px] py-0.5 font-extrabold tracking-widest text-amber">EMBEDDED RF</span>
+                </div>
+              </div>
+
+              <div class="mb-5 p-4 bg-gradient-to-br from-charcoal via-pine to-abyss border-2 border-bone/40">
+                <div class="flex items-center justify-between">
+                  <span class="font-anton text-3xl sm:text-4xl uppercase tracking-wide text-bone leading-none">RF &amp; SENSORS</span>
+                  <span class="text-3xl">🔌</span>
+                </div>
+                <div class="mt-2 font-mono text-[10px] text-amber uppercase tracking-widest">
+                  RF EMULATORS • MOISTURE ANALYSERS • C/C++
+                </div>
+              </div>
+
+              <h3 class="font-syne font-extrabold text-2xl sm:text-[1.65rem] text-bone leading-tight mb-3">
+                Hardware Prototyping
+              </h3>
+
+              <p class="text-sm text-bone/80 leading-relaxed mb-6">
+                Drafted technical specifications and conducted physical circuit testing for complex systems including RF emulators and agricultural moisture analysers.
+              </p>
+            </div>
+
+            <div class="relative z-10 pt-4 border-t-2 border-dashed border-bone/20">
+              <div class="flex flex-wrap gap-1.5 mb-5">
+                <span class="px-2.5 py-1 bg-abyss border border-amber/60 font-mono text-[11px] font-bold text-amber">C / C++</span>
+                <span class="px-2.5 py-1 bg-abyss border border-bone/30 font-mono text-[11px] font-bold text-bone">RF Systems</span>
+                <span class="px-2.5 py-1 bg-abyss border border-bone/30 font-mono text-[11px] font-bold text-bone">Circuit Testing</span>
+              </div>
+
+              <div class="flex items-center justify-between gap-3">
+                <span class="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 bg-charcoal border border-amber/50 text-amber font-mono text-xs font-bold uppercase tracking-wider">
+                  <span>HARDWARE SPEC // TESTED</span>
+                </span>
+                <svg class="w-16 h-9 text-bone/70 shrink-0" viewBox="0 0 80 36" fill="currentColor">
+                  <rect x="2" y="2" width="4" height="32"/><rect x="9" y="2" width="1.5" height="32"/><rect x="13" y="2" width="4" height="32"/><rect x="20" y="2" width="2" height="32"/><rect x="25" y="2" width="3" height="32"/><rect x="31" y="2" width="5" height="32"/><rect x="39" y="2" width="2" height="32"/><rect x="44" y="2" width="3" height="32"/><rect x="50" y="2" width="2" height="32"/><rect x="55" y="2" width="4" height="32"/><rect x="62" y="2" width="1.5" height="32"/><rect x="67" y="2" width="4" height="32"/><rect x="74" y="2" width="3" height="32"/>
+                </svg>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ 04. CONTACT / SIGNAL TRANSMISSION ═══════════════ -->
+    <section id="contact" class="py-28 px-4 sm:px-8 relative border-t border-slatefog/25">
+      <div class="max-w-4xl mx-auto text-center">
+        
+        <p class="font-mono text-xs uppercase tracking-[0.25em] text-amber mb-3">
+          04. TRANSMIT SIGNAL // WINDEN FREQUENCY
+        </p>
+
+        <!-- Botanical Header for Contact -->
+        <div class="botanical-header-wrap mb-6">
+          <svg class="botanical-svg-back" viewBox="0 0 700 160" fill="none">
+            <path class="branch-path" d="M10,120 C160,55 340,125 520,55 C600,25 650,60 695,35" stroke="#040507" stroke-width="15" stroke-linecap="round"/>
+            <g class="leaf-cluster" transform="translate(180, 75) rotate(-22) scale(1.25)"><use href="#black-leaf-l"/></g>
+            <g class="leaf-cluster-alt" transform="translate(510, 48) rotate(22) scale(1.25)"><use href="#black-leaf-r"/></g>
+          </svg>
+          <h2 class="botanical-title-text font-cinzel font-extrabold text-3xl sm:text-5xl md:text-6xl text-bone tracking-tight">
+            Let's build something <span class="text-amber">robust.</span>
+          </h2>
+          <svg class="botanical-svg-front" viewBox="0 0 700 160" fill="none">
+            <path class="branch-path" d="M45,40 C190,105 360,40 545,105" stroke="#040507" stroke-width="7" stroke-linecap="round"/>
+            <g class="leaf-cluster" transform="translate(335, 68) rotate(16) scale(1.15)"><use href="#black-leaf-r"/></g>
+          </svg>
+        </div>
+
+        <p class="text-base sm:text-lg text-bone/80 max-w-xl mx-auto mb-10 leading-relaxed">
+          Open to roles in QA automation, AI infrastructure, and embedded systems. I'd love to hear from you.
+        </p>
+
+        <!-- Direct Email Action + Copy Button -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+          <a href="mailto:yusufkhan210807@gmail.com" class="px-7 py-4 rounded-md bg-charcoal border-2 border-amber text-bone hover:bg-amber hover:text-abyss font-mono text-sm sm:text-base font-extrabold tracking-wide transition-all shadow-[6px_6px_0px_#9e6b1b]">
+            yusufkhan210807@gmail.com
+          </a>
+          <button id="copyEmailBtn" type="button" class="px-5 py-4 rounded-md bg-pine/60 border border-slatefog/50 hover:border-amber text-amber font-mono text-xs font-bold uppercase tracking-widest transition-all">
+            Copy Address
+          </button>
+        </div>
+
+        <!-- Social Links -->
+        <div class="flex flex-wrap justify-center gap-5">
+          <a href="https://www.linkedin.com/in/yusuf-khan-5059a7381" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-3 px-6 py-3.5 rounded-md cave-panel font-mono text-xs sm:text-sm font-bold uppercase tracking-widest text-bone hover:text-amber transition-all">
+            <svg class="w-4 h-4 text-amber" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/>
+            </svg>
+            <span>LinkedIn</span>
+          </a>
+
+          <a href="https://github.com/yusufkhan210807-wq" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-3 px-6 py-3.5 rounded-md cave-panel font-mono text-xs sm:text-sm font-bold uppercase tracking-widest text-bone hover:text-amber transition-all">
+            <svg class="w-4 h-4 text-amber" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+            </svg>
+            <span>GitHub</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <footer class="py-10 px-4 sm:px-8 border-t border-slatefog/20 bg-abyss/90 text-center font-mono text-xs text-slatefog">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>© 2026 Yusuf Khan. Built with care. <span class="text-amber">Sic Mundus Creatus Est.</span></p>
+      <a href="#hero" class="text-bone hover:text-amber uppercase tracking-widest flex items-center gap-1.5">
+        <span>Return to Origin</span>
+        <span>↑</span>
+      </a>
     </div>
-  </section>
+  </footer>
 
-  <!-- Back-to-top button -->
-  <button class="back-top" id="backTop" aria-label="Back to top">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-  </button>
-
-  <!-- ═══════════════ JS ═════════════════ -->
+  <!-- ═══════════════ APPLICATION JAVASCRIPT (THREE.JS + GSAP + PHYSICS CAROUSEL) ═══════════════ -->
   <script>
-    /* ── Scroll-reveal via IntersectionObserver ── */
-    const reveals = document.querySelectorAll('.reveal');
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          io.unobserve(e.target);
+    window.addEventListener('load', () => {
+      gsap.registerPlugin(ScrollTrigger);
+
+      /* ─────────────────────────────────────────────────────────────
+         1. OPTIONAL PROCEDURAL WEB AUDIO SYNTH (Dark Cave Drone + Vinyl Scratch)
+      ───────────────────────────────────────────────────────────── */
+      let audioCtx = null;
+      let soundEnabled = false;
+      const soundToggleBtn = document.getElementById('soundToggleBtn');
+      const soundIcon = document.getElementById('soundIcon');
+
+      function initAudio() {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) audioCtx = new AudioContextClass();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }
+
+      function playTemporalPulseSound() {
+        if (!soundEnabled) return;
+        initAudio();
+        if (!audioCtx) return;
+
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(92, now);
+        osc.frequency.exponentialRampToValueAtTime(34, now + 0.75);
+
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.8);
+      }
+
+      function playVinylScratchSound() {
+        if (!soundEnabled) return;
+        initAudio();
+        if (!audioCtx) return;
+
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(180, now);
+        osc.frequency.linearRampToValueAtTime(520, now + 0.09);
+        osc.frequency.linearRampToValueAtTime(140, now + 0.22);
+
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      }
+
+      soundToggleBtn.addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+        if (soundEnabled) playTemporalPulseSound();
+      });
+
+      /* ─────────────────────────────────────────────────────────────
+         2. THREE.JS CENTERPIECE: THE "GOD PARTICLE" GOOEY FERROFLUID SPHERE
+      ───────────────────────────────────────────────────────────── */
+      const canvas = document.getElementById('webgl-canvas');
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x060709, 0.085);
+
+      const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(0, 0, 6.2);
+
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: true,
+        powerPreference: 'high-performance'
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.25;
+
+      // Group to hold the God Particle & Accretion Spores
+      const anomalyGroup = new THREE.Group();
+      anomalyGroup.position.set(1.35, 0.1, 0);
+      scene.add(anomalyGroup);
+
+      // Uniforms for Custom GLSL 3D Simplex Noise Ferrofluid Shader
+      const customUniforms = {
+        uTime: { value: 0 },
+        uFrequency: { value: 1.45 },
+        uAmplitude: { value: 0.42 },
+        uMouse3D: { value: new THREE.Vector3(0, 0, 1) },
+        uVelocity: { value: 0.0 },
+        uPulse: { value: 0.0 }
+      };
+
+      // High-Subdivision Icosahedron Geometry for Ultra-Smooth Gooey Tendrils
+      const sphereGeo = new THREE.IcosahedronGeometry(1.55, 64);
+
+      // High-gloss Oil-Slick Physical Material with Custom Shader Injection
+      const sphereMat = new THREE.MeshPhysicalMaterial({
+        color: new THREE.Color('#040507'),
+        roughness: 0.13,
+        metalness: 0.88,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.06,
+        reflectivity: 1.0
+      });
+
+      const simplexNoiseGLSL = `
+        vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
+        vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
+        float snoise(vec3 v){
+          const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+          const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+          vec3 i  = floor(v + dot(v, C.yyy));
+          vec3 x0 = v - i + dot(i, C.xxx);
+          vec3 g = step(x0.yzx, x0.xyz);
+          vec3 l = 1.0 - g;
+          vec3 i1 = min(g.xyz, l.zxy);
+          vec3 i2 = max(g.xyz, l.zxy);
+          vec3 x1 = x0 - i1 + 1.0 * C.xxx;
+          vec3 x2 = x0 - i2 + 2.0 * C.xxx;
+          vec3 x3 = x0 - 1.0 + 3.0 * C.xxx;
+          i = mod(i, 289.0);
+          vec4 p = permute(permute(permute(
+                    i.z + vec4(0.0, i1.z, i2.z, 1.0))
+                  + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+                  + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+          float n_ = 1.0/7.0;
+          vec3 ns = n_ * D.wyz - D.xzx;
+          vec4 j = p - 49.0 * floor(p * ns.z *ns.z);
+          vec4 x_ = floor(j * ns.z);
+          vec4 y_ = floor(j - 7.0 * x_);
+          vec4 x = x_ *ns.x + ns.yyyy;
+          vec4 y = y_ *ns.x + ns.yyyy;
+          vec4 h = 1.0 - abs(x) - abs(y);
+          vec4 b0 = vec4(x.xy, y.xy);
+          vec4 b1 = vec4(x.zw, y.zw);
+          vec4 s0 = floor(b0)*2.0 + 1.0;
+          vec4 s1 = floor(b1)*2.0 + 1.0;
+          vec4 sh = -step(h, vec4(0.0));
+          vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+          vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+          vec3 p0 = vec3(a0.xy,h.x);
+          vec3 p1 = vec3(a0.zw,h.y);
+          vec3 p2 = vec3(a1.xy,h.z);
+          vec3 p3 = vec3(a1.zw,h.w);
+          vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+          p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+          vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+          m = m * m;
+          return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+        }
+
+        float getGooDisplacement(vec3 pos, float time, float freq, float amp, vec3 mouseDir, float vel, float pulse) {
+          float n1 = snoise(pos * freq + vec3(time * 0.45, -time * 0.35, time * 0.3));
+          float n2 = snoise(pos * (freq * 2.15) - vec3(time * 0.7, time * 0.5, -time * 0.6)) * 0.45;
+          // Ferrofluid magnetic spike shaping
+          float tendrils = sign(n1 + n2) * pow(abs(n1 + n2), 1.35);
+          // Cursor magnetic pull
+          float mouseAffinity = max(0.0, dot(normalize(pos), normalize(mouseDir)));
+          float cursorPull = pow(mouseAffinity, 3.0) * (0.22 + vel * 0.38);
+          return tendrils * (amp + pulse * 0.45) + cursorPull;
+        }
+      `;
+
+      sphereMat.onBeforeCompile = (shader) => {
+        shader.uniforms.uTime = customUniforms.uTime;
+        shader.uniforms.uFrequency = customUniforms.uFrequency;
+        shader.uniforms.uAmplitude = customUniforms.uAmplitude;
+        shader.uniforms.uMouse3D = customUniforms.uMouse3D;
+        shader.uniforms.uVelocity = customUniforms.uVelocity;
+        shader.uniforms.uPulse = customUniforms.uPulse;
+
+        shader.vertexShader = `
+          uniform float uTime;
+          uniform float uFrequency;
+          uniform float uAmplitude;
+          uniform vec3 uMouse3D;
+          uniform float uVelocity;
+          uniform float uPulse;
+          varying float vDisplacement;
+          ${simplexNoiseGLSL}
+        ` + shader.vertexShader;
+
+        // Replace normal & vertex calculation using finite differences so lighting reflects accurately off liquid tendrils
+        shader.vertexShader = shader.vertexShader.replace(
+          '#include <beginnormal_vertex>',
+          `
+          vec3 objectNormal = vec3(normal);
+          float eps = 0.015;
+          vec3 tangent = normalize(cross(objectNormal, vec3(0.0, 1.0, 0.001)));
+          vec3 bitangent = normalize(cross(objectNormal, tangent));
+
+          float d0 = getGooDisplacement(position, uTime, uFrequency, uAmplitude, uMouse3D, uVelocity, uPulse);
+          vec3 posT = position + tangent * eps;
+          vec3 posB = position + bitangent * eps;
+          float dT = getGooDisplacement(posT, uTime, uFrequency, uAmplitude, uMouse3D, uVelocity, uPulse);
+          float dB = getGooDisplacement(posB, uTime, uFrequency, uAmplitude, uMouse3D, uVelocity, uPulse);
+
+          vec3 displacedPos = position + objectNormal * d0;
+          vec3 displacedT = posT + normalize(posT) * dT;
+          vec3 displacedB = posB + normalize(posB) * dB;
+
+          objectNormal = normalize(cross(displacedT - displacedPos, displacedB - displacedPos));
+          vDisplacement = d0;
+          `
+        );
+
+        shader.vertexShader = shader.vertexShader.replace(
+          '#include <begin_vertex>',
+          `
+          vec3 transformed = position + normalize(position) * vDisplacement;
+          `
+        );
+
+        // Inject subtle Radiation Amber & Pine Green Iridescent Rim Glow in Fragment Shader
+        shader.fragmentShader = `
+          varying float vDisplacement;
+        ` + shader.fragmentShader;
+
+        shader.fragmentShader = shader.fragmentShader.replace(
+          '#include <dithering_fragment>',
+          `
+          float rim = 1.0 - max(0.0, dot(normalize(vNormal), vec3(0.0, 0.0, 1.0)));
+          vec3 amberGlow = vec3(0.831, 0.608, 0.153) * pow(rim, 3.2) * (0.9 + max(0.0, vDisplacement) * 1.8);
+          vec3 pineSheen = vec3(0.086, 0.141, 0.114) * pow(rim, 1.8);
+          gl_FragColor.rgb += amberGlow + pineSheen;
+          #include <dithering_fragment>
+          `
+        );
+      };
+
+      const gooeySphere = new THREE.Mesh(sphereGeo, sphereMat);
+      anomalyGroup.add(gooeySphere);
+
+      // Ambient Accretion Spore Cloud around the God Particle
+      const particleCount = 420;
+      const particleGeo = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCount * 3);
+      for (let i = 0; i < particleCount; i++) {
+        const r = 2.1 + Math.random() * 2.6;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+        positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+        positions[i * 3 + 2] = r * Math.cos(phi);
+      }
+      particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const particleMat = new THREE.PointsMaterial({
+        color: 0xd49b27,
+        size: 0.032,
+        transparent: true,
+        opacity: 0.55
+      });
+      const sporeCloud = new THREE.Points(particleGeo, particleMat);
+      anomalyGroup.add(sporeCloud);
+
+      // Dramatic Cinematic Lighting (Radiation Amber, Pine Green, Slate Rim)
+      const ambientLight = new THREE.AmbientLight(0x16241d, 0.9);
+      scene.add(ambientLight);
+
+      const amberLight = new THREE.PointLight(0xd49b27, 6.5, 18);
+      amberLight.position.set(3.8, 2.6, 3.5);
+      scene.add(amberLight);
+
+      const ochreRimLight = new THREE.PointLight(0x9e6b1b, 5.0, 16);
+      ochreRimLight.position.set(-4.2, -2.5, 2.2);
+      scene.add(ochreRimLight);
+
+      const slateTopLight = new THREE.DirectionalLight(0x4a5559, 2.8);
+      slateTopLight.position.set(0, 5, -3);
+      scene.add(slateTopLight);
+
+      // Mouse Velocity & Volumetric Light Tracking
+      let mouseX = 0, mouseY = 0;
+      let prevMouseX = 0, prevMouseY = 0;
+      let cursorVelocity = 0;
+      const targetMouse3D = new THREE.Vector3(0, 0, 1);
+
+      window.addEventListener('pointermove', (e) => {
+        document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+        document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+
+        mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+        mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+
+        const dx = mouseX - prevMouseX;
+        const dy = mouseY - prevMouseY;
+        cursorVelocity = Math.min(1.5, Math.hypot(dx, dy) * 14);
+        prevMouseX = mouseX;
+        prevMouseY = mouseY;
+
+        targetMouse3D.set(mouseX * 2.2, mouseY * 2.2, 1.0);
+      }, { passive: true });
+
+      // Interactive Sliders & Anomaly Pulse Trigger
+      const spikeSlider = document.getElementById('spikeSlider');
+      const freqSlider = document.getElementById('freqSlider');
+      const spikeValLabel = document.getElementById('spikeValLabel');
+      const freqValLabel = document.getElementById('freqValLabel');
+      const hudFreqReadout = document.getElementById('hudFreqReadout');
+      const hudAnomalyState = document.getElementById('hudAnomalyState');
+
+      spikeSlider.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        customUniforms.uAmplitude.value = val;
+        spikeValLabel.textContent = val.toFixed(2);
+      });
+
+      freqSlider.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        customUniforms.uFrequency.value = val;
+        freqValLabel.textContent = val.toFixed(2);
+        if (hudFreqReadout) hudFreqReadout.textContent = `${val.toFixed(2)} Hz`;
+      });
+
+      function triggerAnomalyDestabilization() {
+        playTemporalPulseSound();
+        if (hudAnomalyState) {
+          hudAnomalyState.textContent = 'TEMPORAL SURGE!';
+          setTimeout(() => { hudAnomalyState.textContent = 'STABLE // 60FPS'; }, 1400);
+        }
+        gsap.fromTo(customUniforms.uPulse,
+          { value: 0.85 },
+          { value: 0.0, duration: 1.5, ease: 'elastic.out(1, 0.35)' }
+        );
+        gsap.to(anomalyGroup.rotation, {
+          y: anomalyGroup.rotation.y + Math.PI * 0.85,
+          x: anomalyGroup.rotation.x + 0.45,
+          duration: 1.3,
+          ease: 'power3.out'
+        });
+      }
+
+      document.getElementById('hudPulseBtn').addEventListener('click', triggerAnomalyDestabilization);
+      document.getElementById('heroDestabilizeBtn').addEventListener('click', triggerAnomalyDestabilization);
+
+      // Scroll-Driven 3D Morphing Across Sections
+      ScrollTrigger.create({
+        trigger: 'body',
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 1.2,
+        onUpdate: (self) => {
+          const p = self.progress;
+          // Smoothly glide the sphere across the viewport as user scrolls
+          const isMobile = window.innerWidth < 900;
+          const targetX = isMobile ? Math.sin(p * Math.PI * 2) * 0.35 : Math.cos(p * Math.PI * 2) * 1.35;
+          const targetY = Math.sin(p * Math.PI * 3) * 0.35;
+          const targetZ = -p * 0.9;
+          anomalyGroup.position.x = THREE.MathUtils.lerp(anomalyGroup.position.x, targetX, 0.15);
+          anomalyGroup.position.y = THREE.MathUtils.lerp(anomalyGroup.position.y, targetY, 0.15);
+          anomalyGroup.position.z = THREE.MathUtils.lerp(anomalyGroup.position.z, targetZ, 0.15);
         }
       });
-    }, { threshold: 0.12 });
-    reveals.forEach(el => io.observe(el));
 
-    /* ── Hamburger menu ── */
-    const hamburger = document.getElementById('hamburger');
-    const navLinks  = document.getElementById('navLinks');
-    hamburger.addEventListener('click', () => {
-      hamburger.classList.toggle('open');
-      navLinks.classList.toggle('open');
-    });
-    navLinks.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', () => {
-        hamburger.classList.remove('open');
-        navLinks.classList.remove('open');
-      });
-    });
-
-    /* ── Back-to-top ── */
-    const backTop = document.getElementById('backTop');
-    window.addEventListener('scroll', () => {
-      backTop.classList.toggle('show', window.scrollY > 400);
-    }, { passive: true });
-    backTop.addEventListener('click', () => window.scrollTo(0, 0));
-
-    /* ── Active nav link on scroll ── */
-    const sections = document.querySelectorAll('section[id]');
-    const navAnchors = document.querySelectorAll('.nav-links a');
-    
-    const setActive = () => {
-      let cur = '';
-      sections.forEach(s => {
-        if (window.scrollY >= s.offsetTop - 120) cur = s.id;
-      });
-      navAnchors.forEach(a => {
-        if (a.getAttribute('href') === '#' + cur) {
-          a.classList.add('active');
+      // Responsive Resize Handler
+      function updateResponsiveSpherePosition() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        if (window.innerWidth < 900) {
+          anomalyGroup.position.x = 0;
+          anomalyGroup.scale.setScalar(0.78);
         } else {
-          a.classList.remove('active');
+          anomalyGroup.scale.setScalar(1.0);
         }
+      }
+      updateResponsiveSpherePosition();
+      window.addEventListener('resize', updateResponsiveSpherePosition);
+
+      // 60FPS WebGL Render Loop
+      const clock = new THREE.Clock();
+      function animateWebGL() {
+        requestAnimationFrame(animateWebGL);
+        const elapsed = clock.getElapsedTime();
+
+        customUniforms.uTime.value = elapsed;
+        cursorVelocity *= 0.92;
+        customUniforms.uVelocity.value = THREE.MathUtils.lerp(customUniforms.uVelocity.value, cursorVelocity, 0.15);
+        customUniforms.uMouse3D.value.lerp(targetMouse3D, 0.08);
+
+        gooeySphere.rotation.y = elapsed * 0.18 + mouseX * 0.35;
+        gooeySphere.rotation.x = elapsed * 0.11 - mouseY * 0.25;
+
+        sporeCloud.rotation.y = -elapsed * 0.07;
+        sporeCloud.rotation.z = elapsed * 0.04;
+
+        amberLight.position.x = Math.cos(elapsed * 0.7) * 4.0;
+        amberLight.position.y = Math.sin(elapsed * 0.5) * 3.0;
+
+        renderer.render(scene, camera);
+      }
+      animateWebGL();
+
+      /* ─────────────────────────────────────────────────────────────
+         3. GSAP BOTANICAL BRANCH GROWTH ANIMATIONS ON SCROLL
+      ───────────────────────────────────────────────────────────── */
+      document.querySelectorAll('.botanical-header-wrap').forEach((wrap) => {
+        const paths = wrap.querySelectorAll('.branch-path');
+        gsap.fromTo(paths,
+          { strokeDashoffset: 950 },
+          {
+            strokeDashoffset: 0,
+            duration: 2.0,
+            stagger: 0.12,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: wrap,
+              start: 'top 85%'
+            }
+          }
+        );
       });
-    };
-    window.addEventListener('scroll', setActive, { passive: true });
-    setActive();
+
+      /* ─────────────────────────────────────────────────────────────
+         4. KINETIC HIP-HOP MIXTAPE CAROUSEL (DRAG + SNAP + SKEW + GLITCH)
+      ───────────────────────────────────────────────────────────── */
+      const viewport = document.getElementById('crateViewport');
+      const track = document.getElementById('crateTrack');
+      const cards = Array.from(track.querySelectorAll('.mixtape-card'));
+      const pills = Array.from(document.querySelectorAll('.track-pill'));
+      const prevBtn = document.getElementById('cratePrevBtn');
+      const nextBtn = document.getElementById('crateNextBtn');
+      const scratchBtn = document.getElementById('crateScratchBtn');
+
+      let currentIndex = 0;
+      let currentX = 0;
+      let targetX = 0;
+      let isDragging = false;
+      let startX = 0;
+      let dragStartX = 0;
+      let velocityX = 0;
+      let lastPointerX = 0;
+
+      function getCardStep() {
+        if (!cards.length) return 450;
+        const cardWidth = cards[0].offsetWidth;
+        const style = window.getComputedStyle(track);
+        const gap = parseFloat(style.columnGap || style.gap || 44);
+        return cardWidth + gap;
+      }
+
+      function snapToCard(index, withGlitch = false) {
+        currentIndex = Math.max(0, Math.min(cards.length - 1, index));
+        const step = getCardStep();
+        targetX = -currentIndex * step;
+
+        cards.forEach((card, i) => {
+          card.classList.toggle('active-card', i === currentIndex);
+          if (withGlitch && i === currentIndex) {
+            card.classList.remove('glitch-burst');
+            void card.offsetWidth;
+            card.classList.add('glitch-burst');
+          }
+        });
+
+        pills.forEach((pill, i) => {
+          if (i === currentIndex) {
+            pill.className = 'track-pill px-3 py-1.5 border border-amber bg-amber text-abyss font-extrabold uppercase transition-all';
+          } else {
+            pill.className = 'track-pill px-3 py-1.5 border border-slatefog/50 bg-charcoal text-bone/80 hover:border-amber uppercase transition-all';
+          }
+        });
+      }
+
+      // Pointer / Touch Drag Events
+      viewport.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('a, button')) return;
+        isDragging = true;
+        viewport.classList.add('dragging');
+        startX = e.clientX;
+        lastPointerX = e.clientX;
+        dragStartX = targetX;
+        velocityX = 0;
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        velocityX = e.clientX - lastPointerX;
+        lastPointerX = e.clientX;
+        targetX = dragStartX + dx;
+      });
+
+      function endDrag() {
+        if (!isDragging) return;
+        isDragging = false;
+        viewport.classList.remove('dragging');
+        const step = getCardStep();
+        const projected = targetX + velocityX * 6.5;
+        const nearestIndex = Math.round(-projected / step);
+        if (nearestIndex !== currentIndex) playVinylScratchSound();
+        snapToCard(nearestIndex, true);
+      }
+
+      window.addEventListener('pointerup', endDrag);
+      window.addEventListener('pointercancel', endDrag);
+
+      // Deck Buttons & Tracklist Scrubber Pills
+      prevBtn.addEventListener('click', () => {
+        playVinylScratchSound();
+        snapToCard(currentIndex - 1, true);
+      });
+
+      nextBtn.addEventListener('click', () => {
+        playVinylScratchSound();
+        snapToCard(currentIndex + 1, true);
+      });
+
+      scratchBtn.addEventListener('click', () => {
+        playVinylScratchSound();
+        const nextIdx = (currentIndex + 1) % cards.length;
+        velocityX = -32;
+        snapToCard(nextIdx, true);
+        triggerAnomalyDestabilization();
+      });
+
+      pills.forEach((pill) => {
+        pill.addEventListener('click', () => {
+          const idx = parseInt(pill.getAttribute('data-index'), 10);
+          playVinylScratchSound();
+          snapToCard(idx, true);
+        });
+      });
+
+      // Keyboard Arrow Support
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') snapToCard(currentIndex + 1, true);
+        if (e.key === 'ArrowLeft') snapToCard(currentIndex - 1, true);
+      });
+
+      // 60fps Kinetic Carousel Physics Loop (Inertia + Velocity Skew)
+      function updateCratePhysics() {
+        requestAnimationFrame(updateCratePhysics);
+        const diff = targetX - currentX;
+        currentX += diff * 0.12;
+        const skew = Math.max(-9, Math.min(9, diff * 0.025));
+
+        track.style.transform = `translate3d(${currentX}px, 0, 0) skewX(${skew.toFixed(2)}deg)`;
+      }
+      snapToCard(0, false);
+      updateCratePhysics();
+
+      window.addEventListener('resize', () => snapToCard(currentIndex, false));
+
+      /* ─────────────────────────────────────────────────────────────
+         5. MOBILE MENU & CLIPBOARD COPY UTILITIES
+      ───────────────────────────────────────────────────────────── */
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileMenu = document.getElementById('mobileMenu');
+      mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+      mobileMenu.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+      });
+
+      const copyEmailBtn = document.getElementById('copyEmailBtn');
+      copyEmailBtn.addEventListener('click', () => {
+        const tempInput = document.createElement('textarea');
+        tempInput.value = 'yusufkhan210807@gmail.com';
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        const origText = copyEmailBtn.textContent;
+        copyEmailBtn.textContent = 'SIGNAL COPIED ✓';
+        setTimeout(() => { copyEmailBtn.textContent = origText; }, 2000);
+      });
+    });
   </script>
 </body>
 </html>
